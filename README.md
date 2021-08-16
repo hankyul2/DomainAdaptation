@@ -4,17 +4,53 @@ This repository contains DANN, CDAN, BSP pytorch source code (not official, just
 
 
 
+We will update basic idea about domain adaptation
+
+
+
 ### Tutorial (use standard dataset: Office-31, Office-home, Digits)
 
-1. Download Dataset 
-   1. Office-31
-   2. Office-home
-   3. Digits
-2. Train 
+1. Clone repository and install dependency
+
+   ```bash
+   git clone https://github.com/hankyul2/DomainAdaptation.git
+   pip3 install requirements.txt
+   ```
+
+2. Download Dataset 
+
+   1. Use download script
+
+      ```bash
+      # cloned repository
+      python3 download_dataset.py
+      ```
+
+   2. Download Dataset yourself and put them in data directory
+
+      1. Office-31 (save under `data/office_31`)
+
+         Go to [jindongwang/transferlearning](https://github.com/jindongwang/transferlearning/blob/master/data/dataset.md), this repository summarizes how to download various datasets, including office-31.
+
+      2. Office-home (save under `data/office_home`)
+
+         Go to [official home page](https://www.hemanthdv.org/officeHomeDataset.html). 
+
+      3. Digits (save under `data/MNIST`, `data/SVHN`, `data/USPS`)
+
+         You can download from torchvision. It will automatically download SVHN, MNIST, USPS.
+
+3. Train 
+
+   ```bash
+   python3 main.py --gpu_id --src a --tgt w
+   ```
+
+   
 
 
 
-### Unsupervised Benchmark Result
+### Benchmark Result (Closed world)
 
 *Office-31 Dataset Benchmark done in this work(2021)*
 
@@ -53,13 +89,14 @@ Things you should know
 
 ### Further work
 
+- [ ] Prepare Dataset
+  - [x] Office-31
+  - [x] Office-Home : [공식 홈페이지](https://www.hemanthdv.org/officeHomeDataset.html) 에서 다운로드 가능
+  - [x] Digits (모두 torchvision datasets에서 다운로드 가능)
+    - [x] SVHN
+    - [x] MNIST
+    - [x] USPS
 - [ ] Source Only
-  - [ ] Office-31
-  - [ ] Office-Home : [공식 홈페이지](https://www.hemanthdv.org/officeHomeDataset.html) 에서 다운로드 가능
-  - [ ] Digits (모두 torchvision datasets에서 다운로드 가능)
-    - [ ] SVHN
-    - [ ] MNIST
-    - [ ] USPS
 - [ ] DANN 
 - [ ] CDAN
 - [ ] DANN + BSP
