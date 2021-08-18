@@ -30,10 +30,10 @@ def get_data_list(dataset_name):
 
 
 def get_dataset(src, tgt):
-    src_ds, src_nclass = get_data_list(src)
-    tgt_ds, tgt_nclass = get_data_list(tgt)
+    src_data_list, src_nclass = get_data_list(src)
+    tgt_data_list, tgt_nclass = get_data_list(tgt)
 
-    transforms = A.Compose([
+    transforms_train_valid = A.Compose([
         A.SmallestMaxSize(256),
         A.CenterCrop(256, 256, p=1),
         A.RandomSizedCrop([200, 256], 224, 224),
@@ -41,17 +41,31 @@ def get_dataset(src, tgt):
         A.Normalize()
     ])
 
-    fake_size = max(len(src_ds), len(tgt_ds))
-    src_dataset = MyDataset(src_ds, fake_size, transforms=transforms)
-    tgt_dataset = MyDataset(tgt_ds, fake_size, transforms=transforms)
-    test_dataset = MyDataset(tgt_ds, transforms=transforms)
+    transforms_test = A.Compose([
+        A.SmallestMaxSize(256),
+        A.CenterCrop(256, 256, p=1),
+        A.RandomSizedCrop([200, 256], 224, 224),
+        A.HorizontalFlip(),
+        A.Normalize()
+    ])
+
+    fake_size = max(len(src_data_list), len(tgt_data_list))
+    src_dataset = MyDataset(src_data_list, fake_size, transforms=transforms_train_valid)
+    tgt_dataset = MyDataset(tgt_data_list, fake_size, transforms=transforms_train_valid)
+    valid_dataset = MyDataset(tgt_data_list, transforms=transforms_train_valid)
+    test_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
 
     print('{} dataset number of class: {}'.format(src, src_nclass))
     print('{} dataset number of class: {}'.format(tgt, tgt_nclass))
-    print('{} dataset len: {}'.format(src, len(src_ds)))
-    print('{} dataset len: {}'.format(tgt, len(tgt_ds)))
+    print('{} dataset len: {}'.format(src, len(src_data_list)))
+    print('{} dataset len: {}'.format(tgt, len(tgt_data_list)))
 
-    return src_dataset, tgt_dataset, test_dataset
+    return src_dataset, tgt_dataset, valid_dataset, test_dataset
+
+
+def convert_to_dataloader(datasets, batch_size, num_workers, train=True):
+    return [torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=train, num_workers=num_workers,
+                                        drop_last=True) for ds in datasets]
 
 
 class MyDataset(torch.utils.data.Dataset):
@@ -63,7 +77,7 @@ class MyDataset(torch.utils.data.Dataset):
         self.transforms = transforms
 
     def __len__(self):
-        return self.fake_size if self.fake_size is not None else self.size
+        return self.fake_size if self.fake_size else self.size
 
     def __getitem__(self, idx):
         img, label = self.df[idx % self.size]
