@@ -3,7 +3,7 @@ import torch
 from src.ModelWrapper import BaseModelWrapper
 from src.bsp import BSP
 from src.cdan import get_model
-from src.dataset import get_dataset
+from src.dataset import get_dataset, convert_to_dataloader
 from src.resnet import get_resnet
 
 from torch.optim import SGD, lr_scheduler as LR
@@ -83,7 +83,7 @@ class ModelWrapper(BaseModelWrapper):
 
         return total_loss / total_step, total_acc / total_step
 
-    def fit(self, train_dl, valid_dl, nepoch):
+    def fit(self, train_dl, valid_dl, nepoch=50):
         best_acc = 0
         best_acc_arg = 0
 
@@ -96,14 +96,15 @@ class ModelWrapper(BaseModelWrapper):
                 best_acc_arg = epoch + 1
                 self.save_best_weight(self.model, best_acc)
 
-            print('=' * 150)
+            print('=' * 180)
             self.log(
                 '[EPOCH]: {:03d}/{:03d}  |  train loss {:07.4f} acc {:07.4f}%  |  valid loss {:07.4f} acc {:07.4f}% ('
                 'best accuracy : {:07.4f} @ {:03d})'.format(
                     epoch + 1, nepoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100, best_acc * 100,
                     best_acc_arg
                 ))
-            print('=' * 150)
+            print('=' * 180)
+            self.log_tensorboard(epoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100)
 
     def get_alpha(self):
         self.step += 1
@@ -134,13 +135,9 @@ class MyOpt:
 
 def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, log_name='cdan-bsp'):
     # step 1. prepare dataset
-    src_dataset, tgt_dataset, test_dataset = get_dataset(src, tgt)
-    src_dl = torch.utils.data.DataLoader(src_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers,
-                                         drop_last=True)
-    tgt_dl = torch.utils.data.DataLoader(tgt_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers,
-                                         drop_last=True)
-    test_dl = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers,
-                                          drop_last=True)
+    datasets = get_dataset(src, tgt)
+    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], batch_size, num_workers, train=True)
+    valid_dl, test_dl = convert_to_dataloader(datasets[2:], batch_size, num_workers, train=False)
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -152,10 +149,13 @@ def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nep
     criterion = None
 
     # step 4. train
-    model = ModelWrapper(log_name, model=model, device=device, optimizer=optimizer, criterion=criterion, max_step=len(src) * nepoch)
-    model.fit((src_dl, tgt_dl), test_dl, nepoch)
+    model = ModelWrapper(log_name, model=model, device=device, optimizer=optimizer, criterion=criterion,
+                         max_step=len(src) * nepoch)
+    model.fit((src_dl, tgt_dl), valid_dl, nepoch)
 
     # step 5. evaluation
+    model.load_best_weight()
+    model.evaluate(test_dl)
 
 
 if __name__ == '__main__':
