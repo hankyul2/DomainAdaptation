@@ -53,7 +53,7 @@ class BaseModelWrapper:
     def load_best_weight(self, path=None):
         path = path if path else self.log_best_weight_path
         if self.model is not None and self.device is not None:
-            self.model.load_state_dict(torch.load(path=path, map_location=self.device))
+            self.model.load_state_dict(torch.load(f=path, map_location=self.device)["weight"])
 
     @torch.no_grad()
     def evaluate(self, test_dl, ncrop=10):
