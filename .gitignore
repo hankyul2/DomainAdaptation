@@ -1,6 +1,10 @@
 # my ignore files
 .idea
 data/*
+pretrained_model_weight/*
+log_text/*
+log_tensor_board/*
+log_best_weight/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
