@@ -8,6 +8,7 @@ from src.resnet import get_resnet
 
 from torch.optim import SGD, lr_scheduler as LR
 import torch.nn.functional as F
+from torch import nn
 
 import numpy as np
 
@@ -36,7 +37,7 @@ class ModelWrapper(BaseModelWrapper):
             feat_src, cls_src, da_src = self.model(x_src, alpha)
             feat_tgt, cls_tgt, da_tgt = self.model(x_tgt, alpha)
             loss_bsp, loss_cls, loss_da_src, loss_da_tgt = self.criterion(cls_src, da_src, da_tgt, feat_src, feat_tgt,
-                                    y_src)
+                                                                          y_src)
             loss = loss_bsp + loss_cls + loss_da_src + loss_da_tgt
             ##########################################################
             loss.backward()
@@ -53,9 +54,9 @@ class ModelWrapper(BaseModelWrapper):
                     '[train] STEP: {:03d}/{:03d}  |  total loss {:07.4f}  |  cls loss {:07.4f}  '
                     '|  da src loss {:07.4f}  |  da tgt loss {:07.4f}  |  bsp loss {:07.4f}  |  acc {:07.4f}%'.
                         format(step + 1, total_step, loss.clone().detach().item(), loss_cls.clone().detach().item(),
-                        loss_da_src.clone().detach().item(), loss_da_tgt.clone().detach().item(),
-                        loss_bsp.clone().detach().item(), acc * 100
-                    ))
+                               loss_da_src.clone().detach().item(), loss_da_tgt.clone().detach().item(),
+                               loss_bsp.clone().detach().item(), acc * 100
+                               ))
 
         return total_loss / total_step, total_acc / total_step
 
@@ -64,18 +65,24 @@ class ModelWrapper(BaseModelWrapper):
         return 2. / (1. + np.exp(-self.gamma * self.step / self.max_step)) - 1
 
 
-def loss_fn(cls_src, da_src, da_tgt, feat_src, feat_tgt, y_src):
-    loss_bsp = BSP(feat_src, feat_tgt) * 1e-4
-    loss_cls = F.cross_entropy(cls_src, y_src)
-    loss_da_src = F.cross_entropy(da_src, torch.ones(y_src.size(0)).long().to(y_src.device))
-    loss_da_tgt = F.cross_entropy(da_tgt, torch.zeros(y_src.size(0)).long().to(y_src.device))
-    return loss_bsp, loss_cls, loss_da_src, loss_da_tgt
+class MyLoss(nn.Module):
+    def __init__(self, alpha=1, beta=1e-4):
+        super(MyLoss, self).__init__()
+        self.beta = beta
+        self.alpha = alpha
+
+    def forward(self, cls_src, da_src, da_tgt, feat_src, feat_tgt, y_src):
+        loss_bsp = BSP(feat_src, feat_tgt) * self.beta
+        loss_cls = F.cross_entropy(cls_src, y_src)
+        loss_da_src = F.cross_entropy(da_src, torch.ones(y_src.size(0)).long().to(y_src.device)) * self.alpha
+        loss_da_tgt = F.cross_entropy(da_tgt, torch.zeros(y_src.size(0)).long().to(y_src.device)) * self.alpha
+        return loss_bsp, loss_cls, loss_da_src, loss_da_tgt
 
 
 class MyOpt:
     def __init__(self, model, lr, nbatch, nepoch=50, weight_decay=0.0005, momentum=0.95):
         self.optimizer = SGD([
-            {'params':model.backbone.parameters(), 'lr':lr},
+            {'params': model.backbone.parameters(), 'lr': lr},
             {'params': model.bottleneck.parameters()},
             {'params': model.domain_classifier.parameters()},
             {'params': model.fc.parameters()}
@@ -90,7 +97,7 @@ class MyOpt:
         self.optimizer.zero_grad()
 
 
-def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, log_name='cdan-bsp', ncrop=10):
+def run(log_name='cdan-bsp', src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, ncrop=10):
     # step 1. prepare dataset
     datasets = get_dataset(src, tgt)
     src_dl, tgt_dl = convert_to_dataloader(datasets[:2], batch_size, num_workers, train=True)
@@ -103,7 +110,7 @@ def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nep
 
     # step 3. training tool (criterion, optimizer)
     optimizer = MyOpt(model, lr=lr, nbatch=len(src_dl), nepoch=nepoch)
-    criterion = loss_fn
+    criterion = MyLoss()
 
     # step 4. train
     model = ModelWrapper(log_name, model=model, device=device, optimizer=optimizer, criterion=criterion,
