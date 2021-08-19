@@ -76,7 +76,7 @@ class BaseModelWrapper:
 
         return total_loss / total_step, total_acc / total_step
 
-    def fit(self, train_dl, valid_dl, nepoch=50):
+    def fit(self, train_dl, valid_dl, test_dl=None, nepoch=50):
         best_acc = 0
         best_acc_arg = 0
 
@@ -87,6 +87,8 @@ class BaseModelWrapper:
             if valid_acc > best_acc:
                 best_acc = valid_acc
                 best_acc_arg = epoch + 1
+                if test_dl:
+                    self.evaluate(test_dl)
                 self.save_best_weight(self.model, best_acc)
 
             print('=' * 180)

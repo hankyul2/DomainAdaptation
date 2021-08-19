@@ -1,0 +1,8 @@
+session_name: da_bsp_benchmark
+windows:
+  - window_name: da bsp benchmark
+    layout: tiled
+    panes:
+      - python3 main.py -g 2 -m DANN_BSP -B office_31
+      - python3 main.py -g 2 -m CDAN_BSP -B office_31
+      - python3 main.py -g 3 -m CDAN_E_BSP -B office_31

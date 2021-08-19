@@ -23,10 +23,20 @@ def get_data_list(dataset_name):
         base_path = 'data/office_31/amazon/images'
     elif dataset_name == 'webcam':
         base_path = 'data/office_31/webcam/images'
-    wecam_names = [os.path.basename(path) for path in glob.glob(os.path.join(base_path, '*'))]
-    webcam_name2path = {name: glob.glob(os.path.join(base_path, name, '*')) for name in wecam_names}
-    ds, webcam_nclass = get_path_label(wecam_names, webcam_name2path)
-    return ds, webcam_nclass
+    elif dataset_name == 'dslr':
+        base_path = 'data/office_31/dslr/images'
+    elif dataset_name == 'art':
+        base_path = 'data/office_home/OfficeHomeDataset_10072016/Art'
+    elif dataset_name == 'clip_art':
+        base_path = 'data/office_home/OfficeHomeDataset_10072016/Clipart'
+    elif dataset_name == 'product':
+        base_path = 'data/office_home/OfficeHomeDataset_10072016/Product'
+    elif dataset_name == 'real_world':
+        base_path = 'data/office_home/OfficeHomeDataset_10072016/\'Real World\''
+    class_names = [os.path.basename(path) for path in glob.glob(os.path.join(base_path, '*'))]
+    class_name2path = {name: glob.glob(os.path.join(base_path, name, '*')) for name in class_names}
+    ds, nclass = get_path_label(class_names, class_name2path)
+    return ds, nclass
 
 
 def get_dataset(src, tgt):
@@ -50,8 +60,8 @@ def get_dataset(src, tgt):
     ])
 
     fake_size = max(len(src_data_list), len(tgt_data_list))
-    src_dataset = MyDataset(src_data_list, fake_size, transforms=transforms_train_valid)
-    tgt_dataset = MyDataset(tgt_data_list, fake_size, transforms=transforms_train_valid)
+    src_dataset = MyDataset(src_data_list, src_nclass, fake_size, transforms=transforms_train_valid)
+    tgt_dataset = MyDataset(tgt_data_list, tgt_nclass, fake_size, transforms=transforms_train_valid)
     valid_dataset = MyDataset(tgt_data_list, transforms=transforms_train_valid)
     test_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
 
@@ -69,12 +79,13 @@ def convert_to_dataloader(datasets, batch_size, num_workers, train=True):
 
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, df, fake_size=None, transforms=None):
+    def __init__(self, df, class_num=None, fake_size=None, transforms=None):
         super().__init__()
         self.df = df
         self.size = len(self.df)
         self.fake_size = fake_size
         self.transforms = transforms
+        self.class_num = class_num
 
     def __len__(self):
         return self.fake_size if self.fake_size else self.size
