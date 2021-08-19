@@ -66,8 +66,10 @@ class ModelWrapper(BaseModelWrapper):
 
 
 class MyLoss(nn.Module):
-    def __init__(self, alpha=1, beta=1e-4):
+    def __init__(self, use_entropy, use_bsp, alpha=1, beta=1e-4):
         super(MyLoss, self).__init__()
+        self.use_entropy = use_entropy
+        self.use_bsp = use_bsp
         self.beta = beta
         self.alpha = alpha
 
@@ -97,11 +99,16 @@ class MyOpt:
         self.optimizer.zero_grad()
 
 
-def run(log_name='cdan-bsp', src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, ncrop=10):
+def run(args):
+    # step 0. parse model name
+    use_entropy = True if 'E' in args.model_name else False
+    use_bsp = True if 'BSP' in args.model_name else False
+    use_cdan = True if 'C' in args.model_name else False
+
     # step 1. prepare dataset
-    datasets = get_dataset(src, tgt)
-    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], batch_size, num_workers, train=True)
-    valid_dl, test_dl = convert_to_dataloader(datasets[2:], batch_size, num_workers, train=False)
+    datasets = get_dataset(args.src, args.tgt)
+    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, train=True)
+    valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, train=False)
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -109,18 +116,14 @@ def run(log_name='cdan-bsp', src='amazon', tgt='webcam', batch_size=32, num_work
     model = get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024).to(device)
 
     # step 3. training tool (criterion, optimizer)
-    optimizer = MyOpt(model, lr=lr, nbatch=len(src_dl), nepoch=nepoch)
-    criterion = MyLoss()
+    optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl), nepoch=args.nepoch)
+    criterion = MyLoss(use_entropy=use_entropy, use_bsp=use_bsp)
 
     # step 4. train
-    model = ModelWrapper(log_name, model=model, device=device, optimizer=optimizer, criterion=criterion,
-                         max_step=len(src) * nepoch)
-    model.fit((src_dl, tgt_dl), valid_dl, nepoch)
+    model = ModelWrapper(args.model_name, model=model, device=device, optimizer=optimizer, criterion=criterion,
+                         max_step=len(src_dl) * args.nepoch)
+    model.fit((src_dl, tgt_dl), valid_dl, args.nepoch)
 
     # step 5. evaluation
     model.load_best_weight()
-    model.evaluate(test_dl, ncrop=ncrop)
-
-
-if __name__ == '__main__':
-    run(src='webcam', tgt='amazon')
+    model.evaluate(test_dl, ncrop=args.ncrop)
