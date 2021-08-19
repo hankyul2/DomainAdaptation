@@ -35,11 +35,9 @@ class ModelWrapper(BaseModelWrapper):
             x_src, x_tgt, y_src = x_src.to(self.device), x_tgt.to(self.device), y_src.long().to(self.device)
             feat_src, cls_src, da_src = self.model(x_src, alpha)
             feat_tgt, cls_tgt, da_tgt = self.model(x_tgt, alpha)
-            loss_bsp = BSP(feat_src, feat_tgt) * 1e-4
-            loss_cls = F.cross_entropy(cls_src, y_src)
-            loss_da_src = F.cross_entropy(da_src, torch.ones(y_src.size(0)).long().to(y_src.device))
-            loss_da_tgt = F.cross_entropy(da_tgt, torch.zeros(y_tgt.size(0)).long().to(y_src.device))
-            loss = loss_cls + loss_da_src + loss_da_tgt + loss_bsp
+            loss_bsp, loss_cls, loss_da_src, loss_da_tgt = self.criterion(cls_src, da_src, da_tgt, feat_src, feat_tgt,
+                                    y_src)
+            loss = loss_bsp + loss_cls + loss_da_src + loss_da_tgt
             ##########################################################
             loss.backward()
             self.optimizer.step()
@@ -52,88 +50,47 @@ class ModelWrapper(BaseModelWrapper):
 
             if step != 0 and step % debug_step == 0:
                 self.log(
-                    '[train] STEP: {:03d}/{:03d}  |  total loss {:07.4f}  |  cls loss {:07.4f}  |  da src loss {'
-                    ':07.4f}  |  da tgt loss {:07.4f}  |  bsp loss {:07.4f}  |  acc {:07.4f}%'.format(
-                        step + 1, total_step, loss.clone().detach().item(), loss_cls.clone().detach().item(),
+                    '[train] STEP: {:03d}/{:03d}  |  total loss {:07.4f}  |  cls loss {:07.4f}  '
+                    '|  da src loss {:07.4f}  |  da tgt loss {:07.4f}  |  bsp loss {:07.4f}  |  acc {:07.4f}%'.
+                        format(step + 1, total_step, loss.clone().detach().item(), loss_cls.clone().detach().item(),
                         loss_da_src.clone().detach().item(), loss_da_tgt.clone().detach().item(),
                         loss_bsp.clone().detach().item(), acc * 100
                     ))
 
         return total_loss / total_step, total_acc / total_step
 
-    @torch.no_grad()
-    def valid(self, dl):
-        self.model.eval()
-        debug_step, total_step, total_loss, total_acc = 10, len(dl), 0, 0
-        for step, (x, y) in enumerate(dl):
-            x, y = x.float().to(self.device), y.long().to(self.device)
-            y_hat = self.model.predict(x)
-            loss = F.cross_entropy(y_hat, y)
-
-            _, y_label = y_hat.max(dim=1)
-            acc = (y_label == y).sum().item() / len(y)
-
-            total_loss += loss.clone().detach().item()
-            total_acc += acc
-
-            if step % debug_step == 0:
-                self.log('[valid] STEP: {:03d}/{:03d}  |  loss {:07.4f} acc {:07.4f}%'.format(step + 1, total_step,
-                                                                                              loss.clone().detach().item(),
-                                                                                              acc * 100))
-
-        return total_loss / total_step, total_acc / total_step
-
-    def fit(self, train_dl, valid_dl, nepoch=50):
-        best_acc = 0
-        best_acc_arg = 0
-
-        for epoch in range(nepoch):
-            train_loss, train_acc = self.train(train_dl)
-            valid_loss, valid_acc = self.valid(valid_dl)
-
-            if valid_acc > best_acc:
-                best_acc = valid_acc
-                best_acc_arg = epoch + 1
-                self.save_best_weight(self.model, best_acc)
-
-            print('=' * 180)
-            self.log(
-                '[EPOCH]: {:03d}/{:03d}  |  train loss {:07.4f} acc {:07.4f}%  |  valid loss {:07.4f} acc {:07.4f}% ('
-                'best accuracy : {:07.4f} @ {:03d})'.format(
-                    epoch + 1, nepoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100, best_acc * 100,
-                    best_acc_arg
-                ))
-            print('=' * 180)
-            self.log_tensorboard(epoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100)
-
     def get_alpha(self):
         self.step += 1
         return 2. / (1. + np.exp(-self.gamma * self.step / self.max_step)) - 1
 
 
+def loss_fn(cls_src, da_src, da_tgt, feat_src, feat_tgt, y_src):
+    loss_bsp = BSP(feat_src, feat_tgt) * 1e-4
+    loss_cls = F.cross_entropy(cls_src, y_src)
+    loss_da_src = F.cross_entropy(da_src, torch.ones(y_src.size(0)).long().to(y_src.device))
+    loss_da_tgt = F.cross_entropy(da_tgt, torch.zeros(y_src.size(0)).long().to(y_src.device))
+    return loss_bsp, loss_cls, loss_da_src, loss_da_tgt
+
+
 class MyOpt:
     def __init__(self, model, lr, nbatch, nepoch=50, weight_decay=0.0005, momentum=0.95):
-        self.backbone_optimizer = SGD(model.backbone.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
-        self.cls_optimizer = SGD([
+        self.optimizer = SGD([
+            {'params':model.backbone.parameters(), 'lr':lr},
             {'params': model.bottleneck.parameters()},
             {'params': model.domain_classifier.parameters()},
             {'params': model.fc.parameters()}
         ], lr=lr * 10, momentum=momentum, weight_decay=weight_decay)
-        self.backbone_scheduler = LR.StepLR(self.backbone_optimizer, nbatch * (nepoch / 3), 0.1)
-        self.cls_scheduler = LR.StepLR(self.cls_optimizer, nbatch * (nepoch / 3), 0.1)
+        self.scheduler = LR.StepLR(self.optimizer, nbatch * (nepoch / 3), 0.1)
 
     def step(self):
-        self.backbone_optimizer.step()
-        self.cls_optimizer.step()
-        self.backbone_scheduler.step()
-        self.cls_scheduler.step()
+        self.optimizer.step()
+        self.scheduler.step()
 
     def zero_grad(self):
-        self.cls_optimizer.zero_grad()
-        self.backbone_optimizer.zero_grad()
+        self.optimizer.zero_grad()
 
 
-def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, log_name='cdan-bsp'):
+def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nepoch=50, log_name='cdan-bsp', ncrop=10):
     # step 1. prepare dataset
     datasets = get_dataset(src, tgt)
     src_dl, tgt_dl = convert_to_dataloader(datasets[:2], batch_size, num_workers, train=True)
@@ -146,7 +103,7 @@ def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nep
 
     # step 3. training tool (criterion, optimizer)
     optimizer = MyOpt(model, lr=lr, nbatch=len(src_dl), nepoch=nepoch)
-    criterion = None
+    criterion = loss_fn
 
     # step 4. train
     model = ModelWrapper(log_name, model=model, device=device, optimizer=optimizer, criterion=criterion,
@@ -155,7 +112,7 @@ def run(src='amazon', tgt='webcam', batch_size=32, num_workers=4, lr=0.0003, nep
 
     # step 5. evaluation
     model.load_best_weight()
-    model.evaluate(test_dl)
+    model.evaluate(test_dl, ncrop=ncrop)
 
 
 if __name__ == '__main__':

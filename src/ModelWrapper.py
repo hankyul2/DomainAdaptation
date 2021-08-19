@@ -56,6 +56,50 @@ class BaseModelWrapper:
             self.model.load_state_dict(torch.load(f=path, map_location=self.device)["weight"])
 
     @torch.no_grad()
+    def valid(self, dl):
+        self.model.eval()
+        debug_step, total_step, total_loss, total_acc = 10, len(dl), 0, 0
+        for step, (x, y) in enumerate(dl):
+            x, y = x.float().to(self.device), y.long().to(self.device)
+            y_hat = self.model.predict(x)
+            loss = F.cross_entropy(y_hat, y)
+
+            _, y_label = y_hat.max(dim=1)
+            acc = (y_label == y).sum().item() / len(y)
+
+            total_loss += loss.clone().detach().item()
+            total_acc += acc
+
+            if step % debug_step == 0:
+                self.log('[valid] STEP: {:03d}/{:03d}  |  loss {:07.4f} acc {:07.4f}%'.
+                         format(step + 1, total_step, loss.clone().detach().item(), acc * 100))
+
+        return total_loss / total_step, total_acc / total_step
+
+    def fit(self, train_dl, valid_dl, nepoch=50):
+        best_acc = 0
+        best_acc_arg = 0
+
+        for epoch in range(nepoch):
+            train_loss, train_acc = self.train(train_dl)
+            valid_loss, valid_acc = self.valid(valid_dl)
+
+            if valid_acc > best_acc:
+                best_acc = valid_acc
+                best_acc_arg = epoch + 1
+                self.save_best_weight(self.model, best_acc)
+
+            print('=' * 180)
+            self.log(
+                '[EPOCH]: {:03d}/{:03d}  |  train loss {:07.4f} acc {:07.4f}%  |  valid loss {:07.4f} acc {:07.4f}% ('
+                'best accuracy : {:07.4f} @ {:03d})'.format(
+                    epoch + 1, nepoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100, best_acc * 100,
+                    best_acc_arg
+                ))
+            print('=' * 180)
+            self.log_tensorboard(epoch, train_loss, train_acc * 100, valid_loss, valid_acc * 100)
+
+    @torch.no_grad()
     def evaluate(self, test_dl, ncrop=10):
         self.model.eval()
         total_loss = total_acc = total_y_hat = 0
