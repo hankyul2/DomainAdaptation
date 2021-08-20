@@ -19,7 +19,8 @@ class DomainClassifier(nn.Module):
             nn.Linear(hidden_dim, 2),
         )
 
-    def forward(self, x):
+    def forward(self, x, alpha):
+        x = GRL.apply(x, alpha)
         x = self.layer(x)
         return x
 
@@ -37,11 +38,10 @@ class CDAN(nn.Module):
     def forward(self, x, alpha):
         b, _, _, _ = list(map(lambda x: int(x), x.shape))
         feature = self.feature_extractor(x)
-        reverse_feature = GRL.apply(feature, alpha)
         class_prediction = self.fc(feature)
-        attn_feature = (F.softmax(class_prediction.detach(), dim=-1).unsqueeze(2) @ reverse_feature.unsqueeze(1)).view(
+        attn_feature = (F.softmax(class_prediction, dim=-1).detach().unsqueeze(2) @ feature.unsqueeze(1)).view(
             b, self.nda)
-        domain_prediction = self.domain_classifier(attn_feature)
+        domain_prediction = self.domain_classifier(attn_feature, alpha)
         return feature, class_prediction, domain_prediction
 
     def predict(self, x):
@@ -51,11 +51,12 @@ class CDAN(nn.Module):
 
 
 def conditional_entropy(pred_dom, y_dom, pred_cls, alpha):
+    # Todo: improve E performance
     pre_cls_softmax = F.softmax(pred_cls, dim=-1)
     e = GRL.apply(entropy(pre_cls_softmax), alpha)
     w = 1 + torch.exp(-e)
     loss = F.cross_entropy(pred_dom, y_dom, reduction='none')
-    conditional_loss = (w * loss).mean(dim=0)
+    conditional_loss = ((w/w.sum(dim=0).detach().item()) * loss).sum(dim=0)
     return conditional_loss
 
 

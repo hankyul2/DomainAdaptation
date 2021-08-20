@@ -16,7 +16,8 @@ class DomainClassifier(nn.Module):
             nn.Linear(hidden_dim, 2),
         )
 
-    def forward(self, x):
+    def forward(self, x, alpha):
+        x = GRL.apply(x, alpha)
         x = self.layer(x)
         return x
 
@@ -32,9 +33,8 @@ class DANN(nn.Module):
 
     def forward(self, x, alpha):
         feature = self.feature_extractor(x)
-        reverse_feature = GRL.apply(feature, alpha)
         class_prediction = self.fc(feature)
-        domain_prediction = self.domain_classifier(reverse_feature)
+        domain_prediction = self.domain_classifier(feature, alpha)
         return feature, class_prediction, domain_prediction
 
     def predict(self, x):
