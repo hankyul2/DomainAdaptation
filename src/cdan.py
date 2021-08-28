@@ -2,7 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from entropy import entropy
+from src.entropy import entropy
 from src.grl import GRL
 
 
