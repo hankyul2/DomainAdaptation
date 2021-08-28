@@ -13,12 +13,18 @@ class Identity(nn.Module):
         return x.squeeze()
 
 
-def get_resnet(device, pretrained_model_save_path="pretrained_model_weight"):
-    Path(pretrained_model_save_path).mkdir(exist_ok=True)
-    state_dict = load_state_dict_from_url('https://download.pytorch.org/models/resnet50-0676ba61.pth', progress=True, model_dir=pretrained_model_save_path)
+def get_resnet(device):
+    state_dict = load_pretrained_model_weight()
     net = models.resnet50(pretrained=False)
     net.load_state_dict(state_dict)
     net.fc = Identity()
     net = net.to(device)
     net.eval()
     return net
+
+
+def load_pretrained_model_weight(pretrained_model_save_path="pretrained_model_weight"):
+    Path(pretrained_model_save_path).mkdir(exist_ok=True)
+    state_dict = load_state_dict_from_url('https://download.pytorch.org/models/resnet50-0676ba61.pth', progress=True,
+                                          model_dir=pretrained_model_save_path)
+    return state_dict
