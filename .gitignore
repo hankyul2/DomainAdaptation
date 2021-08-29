@@ -5,6 +5,7 @@ pretrained_model_weight/*
 log_text/*
 log_tensor_board/*
 log_best_weight/*
+sh/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
