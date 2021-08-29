@@ -1,6 +1,0 @@
-session_name: da_dann_benchmark
-windows:
-  - window_name: da dann benchmark
-    layout: tiled
-    panes:
-      - python3 main.py -g 3 -m DANN -B office_31

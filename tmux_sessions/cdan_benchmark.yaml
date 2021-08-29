@@ -1,6 +1,0 @@
-session_name: da_cdan_benchmark
-windows:
-  - window_name: da cdan benchmark
-    layout: tiled
-    panes:
-      - python3 main.py -g 2 -m CDAN -B office_31
