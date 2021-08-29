@@ -55,6 +55,7 @@ We will update basic idea about domain adaptation
 - **Bold** means best accuracy.
 - numbers in parenthesis is score got in this work.
 - All model are based on *resnet50* pretrained on *ILSVRC2012*
+- baseline's gpu memory usage is about 5GB, others gpu memory usages is about 8GB
 
 *Office-31 Dataset Benchmark reported in original papers*
 
