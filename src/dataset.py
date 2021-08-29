@@ -53,16 +53,14 @@ def get_dataset(src, tgt):
 
     transforms_test = A.Compose([
         A.SmallestMaxSize(256),
-        A.CenterCrop(256, 256, p=1),
-        A.RandomSizedCrop([200, 256], 224, 224),
-        A.HorizontalFlip(),
+        A.CenterCrop(224, 224, p=1),
         A.Normalize()
     ])
 
     fake_size = max(len(src_data_list), len(tgt_data_list))
     src_dataset = MyDataset(src_data_list, src_nclass, fake_size, transforms=transforms_train_valid)
     tgt_dataset = MyDataset(tgt_data_list, tgt_nclass, fake_size, transforms=transforms_train_valid)
-    valid_dataset = MyDataset(tgt_data_list, transforms=transforms_train_valid)
+    valid_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
     test_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
 
     print('{} dataset number of class: {}'.format(src, src_nclass))
