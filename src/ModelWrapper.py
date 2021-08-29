@@ -71,7 +71,7 @@ class BaseModelWrapper:
                                           prefix='VALID: ')
 
     def forward(self, x, y):
-        std_act, std_feat, std_y_hat = self.model(x)
+        std_y_hat = self.model(x)
         return self.criterion(std_y_hat, y), std_y_hat
 
     def train(self, train_dl, epoch):

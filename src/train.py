@@ -4,6 +4,7 @@ from torch import nn
 from torch.optim import SGD
 import torch.optim.lr_scheduler as LR
 
+from src.basicModel import get_model
 from src.resnet import get_resnet
 from src.ModelWrapper import BaseModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
@@ -20,8 +21,12 @@ class ModelWrapper(BaseModelWrapper):
 
 
 class MyOpt:
-    def __init__(self, model, nbatch, lr=0.1, weight_decay=0.0005, momentum=0.95):
-        self.optimizer = SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+    def __init__(self, model, lr, nbatch, weight_decay=0.0005, momentum=0.95):
+        self.optimizer = SGD([
+            {'params': model.backbone.parameters(), 'lr': lr},
+            {'params': model.bottleneck.parameters()},
+            {'params': model.fc.parameters()}
+        ], lr=lr * 10, momentum=momentum, weight_decay=weight_decay)
         self.scheduler = LR.MultiStepLR(self.optimizer, milestones=[20, 40], gamma=0.1)
         self.nbatch = nbatch
         self.step_ = 0
@@ -44,9 +49,9 @@ def run(args):
     valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, train=False)
 
     # step 2. load model
-    # Todo: get_shot(), need to include predict function
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = get_resnet(args.model_name).to(device)
+    backbone = get_resnet()
+    model = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num).to(device)
 
     # step 3. prepare training tool
     criterion = nn.CrossEntropyLoss()

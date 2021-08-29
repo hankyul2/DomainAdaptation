@@ -105,7 +105,7 @@ def run(args):
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    backbone = get_resnet(device)
+    backbone = get_resnet()
     model = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num, hidden_dim=1024).to(device)
 
     # step 3. training tool (criterion, optimizer)
