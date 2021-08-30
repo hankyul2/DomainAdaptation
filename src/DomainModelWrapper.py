@@ -8,7 +8,7 @@ class DomainModelWrapper(BaseModelWrapper):
     def __init__(self, log_name):
         super(DomainModelWrapper, self).__init__(log_name)
 
-    def forward(self, x_src, x_tgt, y_src):
+    def forward(self, x_src, x_tgt, y_src, epoch=None):
         raise NotImplementedError
 
     def train(self, train_dl, epoch):
@@ -22,7 +22,7 @@ class DomainModelWrapper(BaseModelWrapper):
             self.data_time.update(time.time() - end)
 
             x_src, x_tgt, y_src = x_src.to(self.device), x_tgt.to(self.device), y_src.long().to(self.device)
-            loss, std_y_hat = self.forward(x_src, x_tgt, y_src)
+            loss, std_y_hat = self.forward(x_src, x_tgt, y_src, epoch)
 
             acc1, acc5 = accuracy(std_y_hat, y_src, topk=(1, 5))
             self.losses.update(loss.item(), x_src.size(0))

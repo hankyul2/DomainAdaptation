@@ -104,8 +104,8 @@ class Result:
         csv_list, csv_dict = self.read_result()
         return list(filter(lambda xs: all([xs[i] == result[i] for i in range(*start_end)]), csv_list))
 
-    def get_best_model(self, model_name, pretrained_dataset):
-        result = [0, 'base', pretrained_dataset, model_name]
+    def get_best_model(self, model_name, src, tgt):
+        result = [0, model_name, src, tgt]
         models = max(self.get_same_list(result, start_end=(1, 4)),
                      key=lambda xs: float(xs[self.acc]))
         if len(models) < 1:
@@ -117,9 +117,9 @@ class Result:
         return list(map(lambda x: strip_log_name(x[self.weight_path]), filter(lambda xs: xs[self.is_best].lower() == 'true', csv_list)))
 
 
-def get_base_model(model_name, pretrained_dataset):
+def get_base_model(model_name, src, tgt):
     result_saver = Result()
-    return result_saver.get_best_model(model_name, pretrained_dataset)
+    return result_saver.get_best_model(model_name, src, tgt)
 
 
 def get_log_name(args, log_format='{}/{}_{}'):

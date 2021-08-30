@@ -1,6 +1,8 @@
+import torch
 from torch import nn
 
 from src.grl import GRL
+from src.log import get_base_model
 
 
 class DomainClassifier(nn.Module):
@@ -43,7 +45,7 @@ class DANN(nn.Module):
         return class_prediction
 
 
-def get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024):
+def get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024, src=None, tgt=None):
     model = DANN(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass, hidden_dim=hidden_dim)
 
     for name, param in model.named_parameters():
@@ -52,5 +54,8 @@ def get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024):
                 nn.init.xavier_uniform_(param)
             else:
                 nn.init.constant_(param, 0)
+
+    if src and tgt :
+        model.load_state_dict(torch.load(get_base_model('DANN', src, tgt), map_location='cpu')['weight'])
 
     return model
