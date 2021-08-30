@@ -1,10 +1,6 @@
 import sys
 import os
 import argparse
-from itertools import permutations
-from pathlib import Path
-
-import pandas as pd
 
 import numpy as np
 import random
@@ -18,7 +14,8 @@ parser.add_argument('-m', '--model_name', type=str.upper, default='', choices=[
     'BASE',
     'DANN',
     'CDAN', 'CDAN_E',
-    'DANN_BSP', 'CDAN_BSP', 'CDAN_E_BSP'
+    'DANN_BSP', 'CDAN_BSP', 'CDAN_E_BSP',
+    'FIXBI',
 ], help='Enter model name')
 parser.add_argument('-s', '--src', type=str, default='', help='Enter source dataset')
 parser.add_argument('-t', '--tgt', type=str, default='', help='Enter target dataset')
@@ -61,6 +58,9 @@ if __name__ == '__main__':
 
     elif args.model_name in ['CDAN_BSP', 'CDAN_E_BSP', 'DANN_BSP', 'DANN_E_BSP']:
         from src.train_bsp import run
+
+    elif args.model_name in ['FIXBI']:
+        from src.train_fixbi import run
 
     for iter in range(args.iter):
         run(args)
