@@ -93,8 +93,8 @@ class Fixbi(nn.Module):
         loss_fm = loss_sp = loss_bim = loss_cr = torch.tensor(0.0)
 
         # step 0. compute pseudo label
-        _, _, sdm_tgt_pseudo, _ = sdm_tgt = self.get_pseudo_label(sdm, x_tgt)
-        _, _, tdm_tgt_pseudo, _ = tdm_tgt = self.get_pseudo_label(tdm, x_tgt)
+        _, _, sdm_tgt_pseudo, sdm_tgt_threshold = sdm_tgt = self.get_pseudo_label(sdm, x_tgt)
+        _, _, tdm_tgt_pseudo, tdm_tgt_threshold = tdm_tgt = self.get_pseudo_label(tdm, x_tgt)
 
         # step 1 : fixed ratio mixup loss
         x_sd = self.mixup(x_src, x_tgt, self.lambda_src)
@@ -120,7 +120,7 @@ class Fixbi(nn.Module):
             x_mid = self.mixup(x_src, x_tgt, self.lambda_mid)
             loss_cr = F.mse_loss(sdm(x_mid), tdm(x_mid))
 
-        return (loss_fm, loss_sp, loss_bim, loss_cr), y_sd
+        return (loss_fm, loss_sp, loss_bim, loss_cr), y_sd, (sdm_tgt_threshold, tdm_tgt_threshold)
 
 
 
