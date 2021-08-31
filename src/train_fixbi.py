@@ -24,7 +24,7 @@ class ModelWrapper(DomainModelWrapper):
         self.criterion = criterion
         self.optimizer = optimizer
 
-    def forward(self, x_src, x_tgt, y_src, epoch):
+    def forward(self, x_src, x_tgt, y_src, epoch=None):
         (loss_fm, loss_sp, loss_bim, loss_cr), cls_src = \
             self.criterion(x_src, x_tgt, y_src, self.model_sdm.predict, self.model_tdm.predict, epoch)
         loss = loss_fm + loss_sp + loss_bim + loss_cr
@@ -48,29 +48,27 @@ class ModelWrapper(DomainModelWrapper):
 
 
 class MyOpt:
-    def __init__(self, model_sdm, model_tdm, criterion, lr, nbatch, weight_decay=0.0005, momentum=0.95):
-        self.optimizer = SGD([
+    def __init__(self, model_sdm, model_tdm, criterion, lr, weight_decay=5e-4, momentum=0.9):
+        self.optimizer_sdm = SGD([
             {'params': model_sdm.backbone.parameters()},
             {'params': model_sdm.bottleneck.parameters()},
             {'params': model_sdm.fc.parameters()},
+            {'params': criterion.T_sdm}
+        ], lr=lr, momentum=momentum, weight_decay=weight_decay)
+        self.optimizer_tdm = SGD([
             {'params': model_tdm.backbone.parameters()},
             {'params': model_tdm.bottleneck.parameters()},
             {'params': model_tdm.fc.parameters()},
-            {'params': criterion.parameters()}
+            {'params': criterion.T_tdm}
         ], lr=lr, momentum=momentum, weight_decay=weight_decay)
-        self.scheduler = LR.MultiStepLR(self.optimizer, milestones=[20, 40], gamma=0.1)
-        self.nbatch = nbatch
-        self.step_ = 0
 
     def step(self):
-        self.optimizer.step()
-        self.step_ += 1
-        if self.step_ % self.nbatch == 0:
-            self.scheduler.step()
-            self.step_ = 0
+        self.optimizer_sdm.step()
+        self.optimizer_tdm.step()
 
     def zero_grad(self):
-        self.optimizer.zero_grad()
+        self.optimizer_sdm.zero_grad()
+        self.optimizer_tdm.zero_grad()
 
 
 def run(args):
@@ -88,7 +86,7 @@ def run(args):
 
     # step 3. training tool (criterion, optimizer)
     criterion = Fixbi()
-    optimizer = MyOpt(model_sdm, model_tdm, criterion, lr=args.lr, nbatch=len(src_dl))
+    optimizer = MyOpt(model_sdm, model_tdm, criterion, lr=args.lr)
 
     # step 4. train
     model = ModelWrapper(log_name=get_log_name(args), model_sdm=model_sdm, model_tdm=model_tdm, device=device,

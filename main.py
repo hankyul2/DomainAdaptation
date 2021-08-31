@@ -22,7 +22,7 @@ parser.add_argument('-t', '--tgt', type=str, default='', help='Enter target data
 parser.add_argument('-b', '--batch_size', type=int, default=32, help='Enter batch size for train step')
 parser.add_argument('-w', '--num_workers', type=int, default=4, help='Enter the number of workers per dataloader')
 parser.add_argument('-l', '--lr', type=float, default=3e-4, help='Enter learning rate')
-parser.add_argument('-e', '--nepoch', type=float, default=50, help='Enter the number of epoch')
+parser.add_argument('-e', '--nepoch', type=int, default=50, help='Enter the number of epoch')
 parser.add_argument('-c', '--ncrop', type=int, default=10, help='Enter the number of crop for final evaluation')
 parser.add_argument('-i', '--iter', type=int, default=1, help='Enter the number of iteration you want to run')
 parser.add_argument('--use_ncrop_for_valid', action='store_true',

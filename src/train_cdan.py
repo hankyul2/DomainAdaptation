@@ -27,7 +27,7 @@ class ModelWrapper(DomainModelWrapper):
         self.gamma = gamma
         self.max_step = max_step
 
-    def forward(self, x_src, x_tgt, y_src):
+    def forward(self, x_src, x_tgt, y_src, epoch=None):
         alpha = self.get_alpha()
         feat_src, cls_src, da_src = self.model(x_src, alpha)
         feat_tgt, cls_tgt, da_tgt = self.model(x_tgt, alpha)

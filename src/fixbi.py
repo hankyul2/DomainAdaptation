@@ -28,7 +28,7 @@ class Model(nn.Module):
 
 
 class Fixbi(nn.Module):
-    def __init__(self, warmup_epoch=25, lambda_src=0.7, lambda_tgt=0.3, lambda_mid=0.5):
+    def __init__(self, warmup_epoch=100, lambda_src=0.7, lambda_tgt=0.3, lambda_mid=0.5):
         super(Fixbi, self).__init__()
         self.warmup_epoch = warmup_epoch
         self.lambda_src = lambda_src
