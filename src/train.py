@@ -1,10 +1,10 @@
 import torch
 from easydict import EasyDict as edict
-from torch import nn
 from torch.optim import SGD
 import torch.optim.lr_scheduler as LR
 
 from src.basicModel import get_model
+from src.label_smoothing import LabelSmoothing
 from src.resnet import get_resnet
 from src.ModelWrapper import BaseModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
@@ -54,7 +54,7 @@ def run(args):
     model = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num).to(device)
 
     # step 3. prepare training tool
-    criterion = nn.CrossEntropyLoss()
+    criterion = LabelSmoothing()
     optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl))
 
     # step 4. train
