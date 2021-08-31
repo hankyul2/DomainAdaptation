@@ -25,7 +25,7 @@ class ModelWrapper(DomainModelWrapper):
         self.optimizer = optimizer
 
     def forward(self, x_src, x_tgt, y_src, epoch=None):
-        (loss_fm, loss_sp, loss_bim, loss_cr), cls_src = \
+        (loss_fm, loss_sp, loss_bim, loss_cr), cls_src, (sdm_threshold, tdm_threshold) = \
             self.criterion(x_src, x_tgt, y_src, self.model_sdm.predict, self.model_tdm.predict, epoch)
         loss = loss_fm + loss_sp + loss_bim + loss_cr
 
@@ -34,11 +34,21 @@ class ModelWrapper(DomainModelWrapper):
         self.bim_losses.update(loss_bim.item(), x_src.size(0))
         self.cr_losses.update(loss_cr.item(), x_src.size(0))
 
+        self.sdm_threshold.update(sdm_threshold.item(), x_src.size(0))
+        self.tdm_threshold.update(tdm_threshold.item(), x_src.size(0))
+
         return loss, cls_src
 
     def init_progress(self, dl, epoch=None, mode='train'):
         super().init_progress(dl, epoch, mode)
         if mode == 'train':
+            if epoch > 0:
+                self.writer.add_scalar('Threshold/SDM', self.sdm_threshold.avg, epoch)
+                self.writer.add_scalar('Threshold/TDM', self.tdm_threshold.avg, epoch)
+
+            self.sdm_threshold = AverageMeter('SDM Thrshold', ':.4f')
+            self.tdm_threshold = AverageMeter('TDM Thrshold', ':.4f')
+
             self.fm_losses = AverageMeter('FM Loss', ':7.4f')
             self.sp_losses = AverageMeter('SP Loss', ':7.4f')
             self.bim_losses = AverageMeter('BIM Loss', ':7.4f')
@@ -48,7 +58,7 @@ class ModelWrapper(DomainModelWrapper):
 
 
 class MyOpt:
-    def __init__(self, model_sdm, model_tdm, criterion, lr, weight_decay=5e-4, momentum=0.9):
+    def __init__(self, model_sdm, model_tdm, criterion, lr, nepoch, nbatch, weight_decay=0.005, momentum=0.9):
         self.optimizer_sdm = SGD([
             {'params': model_sdm.backbone.parameters()},
             {'params': model_sdm.bottleneck.parameters()},
@@ -61,10 +71,25 @@ class MyOpt:
             {'params': model_tdm.fc.parameters()},
             {'params': criterion.T_tdm}
         ], lr=lr, momentum=momentum, weight_decay=weight_decay)
+        self.lr = lr
+        self.nepoch = nepoch
+        self.nbatch = nbatch
+        self.total_step_ = nepoch * nbatch
+        self.step_ = 0
 
     def step(self):
+        self.step_ += 1
+        lr = self.get_lr()
+
+        for param in self.optimizer_sdm.param_groups + self.optimizer_tdm.param_groups:
+            param['lr'] = lr
+
         self.optimizer_sdm.step()
         self.optimizer_tdm.step()
+
+    def get_lr(self, step=None):
+        step = step if step else self.step_
+        return self.lr / (1.0 + 10.0 * (step/self.total_step_)) ** 0.75
 
     def zero_grad(self):
         self.optimizer_sdm.zero_grad()
@@ -86,7 +111,7 @@ def run(args):
 
     # step 3. training tool (criterion, optimizer)
     criterion = Fixbi()
-    optimizer = MyOpt(model_sdm, model_tdm, criterion, lr=args.lr)
+    optimizer = MyOpt(model_sdm, model_tdm, criterion, lr=args.lr, nepoch=args.nepoch, nbatch=len(src_dl))
 
     # step 4. train
     model = ModelWrapper(log_name=get_log_name(args), model_sdm=model_sdm, model_tdm=model_tdm, device=device,
