@@ -47,7 +47,7 @@ class Fixbi(nn.Module):
         threshold = mean - 2 * std
         return y_hat, y_prob, y_pred, threshold
 
-    def fix_mixup_criterion(self, y_hat, y_src, y_pseudo, ratio):
+    def mixup_criterion(self, y_hat, y_src, y_pseudo, ratio):
         return F.cross_entropy(y_hat, y_src.detach()) * ratio + \
                F.cross_entropy(y_hat, y_pseudo.detach()) * (1 - ratio)
 
@@ -101,8 +101,8 @@ class Fixbi(nn.Module):
         x_td = self.mixup(x_src, x_tgt, self.lambda_tgt)
         y_sd = sdm(x_sd)
         y_td = tdm(x_td)
-        loss_fm = self.fix_mixup_criterion(y_sd, y_src, sdm_tgt_pseudo, self.lambda_src) + \
-                  self.fix_mixup_criterion(y_td, y_src, tdm_tgt_pseudo, self.lambda_tgt)
+        loss_fm = self.mixup_criterion(y_sd, y_src, sdm_tgt_pseudo, self.lambda_src) + \
+                  self.mixup_criterion(y_td, y_src, tdm_tgt_pseudo, self.lambda_tgt)
 
         if epoch < self.warmup_epoch:
             # step 2 : self_penalization (epoch < warmup_epoch)
