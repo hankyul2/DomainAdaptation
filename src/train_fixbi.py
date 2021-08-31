@@ -10,10 +10,6 @@ from src.log import get_log_name, Result
 from src.resnet import get_resnet
 
 from torch.optim import SGD, lr_scheduler as LR
-import torch.nn.functional as F
-from torch import nn
-
-import numpy as np
 
 from src.utils import AverageMeter
 

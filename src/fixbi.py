@@ -37,7 +37,7 @@ class Fixbi(nn.Module):
         self.T_sdm = nn.Parameter(torch.tensor(5.0))
         self.T_tdm = nn.Parameter(torch.tensor(5.0))
 
-    def get_interspace(self, src, tgt, ratio):
+    def mixup(self, src, tgt, ratio):
         return src * ratio + tgt * (1 - ratio)
 
     def get_pseudo_label(self, model, x):
@@ -97,8 +97,8 @@ class Fixbi(nn.Module):
         _, _, tdm_tgt_pseudo, _ = tdm_tgt = self.get_pseudo_label(tdm, x_tgt)
 
         # step 1 : fixed ratio mixup loss
-        x_sd = self.get_interspace(x_src, x_tgt, self.lambda_src)
-        x_td = self.get_interspace(x_src, x_tgt, self.lambda_tgt)
+        x_sd = self.mixup(x_src, x_tgt, self.lambda_src)
+        x_td = self.mixup(x_src, x_tgt, self.lambda_tgt)
         y_sd = sdm(x_sd)
         y_td = tdm(x_td)
         loss_fm = self.fix_mixup_criterion(y_sd, y_src, sdm_tgt_pseudo, self.lambda_src) + \
@@ -117,7 +117,7 @@ class Fixbi(nn.Module):
                                        self.bidirectional_matching(sdm_x, sdm_y, tdm_x, tdm_y))
 
             # step 4 : consistency regularization
-            x_mid = self.get_interspace(x_src, x_tgt, self.lambda_mid)
+            x_mid = self.mixup(x_src, x_tgt, self.lambda_mid)
             loss_cr = F.mse_loss(sdm(x_mid), tdm(x_mid))
 
         return (loss_fm, loss_sp, loss_bim, loss_cr), y_sd
