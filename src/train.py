@@ -1,13 +1,12 @@
 import torch
 from easydict import EasyDict as edict
-from torch.optim import SGD
-import torch.optim.lr_scheduler as LR
 
 from src.model.models import get_model
 from src.loss.label_smoothing import LabelSmoothing
 from src.base_model_wrapper import BaseModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
+from src.optimizer import MultiOpt
 
 
 class ModelWrapper(BaseModelWrapper):
@@ -17,28 +16,6 @@ class ModelWrapper(BaseModelWrapper):
         self.device = device
         self.criterion = criterion
         self.optimizer = optimizer
-
-
-class MyOpt:
-    def __init__(self, model, lr, nbatch, weight_decay=0.0005, momentum=0.95):
-        self.optimizer = SGD([
-            {'params': model.backbone.parameters(), 'lr': lr},
-            {'params': model.bottleneck.parameters()},
-            {'params': model.fc.parameters()}
-        ], lr=lr * 10, momentum=momentum, weight_decay=weight_decay)
-        self.scheduler = LR.MultiStepLR(self.optimizer, milestones=[20, 40], gamma=0.1)
-        self.nbatch = nbatch
-        self.step_ = 0
-
-    def step(self):
-        self.optimizer.step()
-        self.step_ += 1
-        if self.step_ % self.nbatch == 0:
-            self.scheduler.step()
-            self.step_ = 0
-
-    def zero_grad(self):
-        self.optimizer.zero_grad()
 
 
 def run(args):
@@ -53,7 +30,7 @@ def run(args):
 
     # step 3. prepare training tool
     criterion = LabelSmoothing()
-    optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl))
+    optimizer = MultiOpt(model, lr=args.lr, nbatch=len(src_dl), nepoch=args.nepoch)
 
     # step 4. train
     model = ModelWrapper(log_name=get_log_name(args), model=model, device=device, optimizer=optimizer, criterion=criterion)

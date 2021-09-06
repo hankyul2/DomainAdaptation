@@ -27,7 +27,7 @@ class DANN(nn.Module):
         super().__init__()
         self.backbone = backbone
         self.bottleneck = nn.Linear(fc_dim, embed_dim)
-        self.feature_extractor = nn.Sequential(self.backbone, self.bottleneck)
+        self.feature_extractor = lambda x: self.bottleneck(self.backbone(x))
         self.fc = nn.Linear(embed_dim, nclass)
         self.domain_classifier = DomainClassifier(embed_dim, hidden_dim)
 
@@ -43,7 +43,7 @@ class DANN(nn.Module):
         return class_prediction
 
 
-def get_dann(backbone, nclass=31, fc_dim=2048, embed_dim=1024, hidden_dim=1024):
+def get_dann(backbone, nclass=31, fc_dim=2048, embed_dim=256, hidden_dim=1024):
     model = DANN(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass, hidden_dim=hidden_dim)
 
     for name, param in model.named_parameters():

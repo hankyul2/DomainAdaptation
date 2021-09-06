@@ -7,7 +7,7 @@ class BasicModel(nn.Module):
         super().__init__()
         self.backbone = backbone
         self.bottleneck = nn.Linear(fc_dim, embed_dim)
-        self.feature_extractor = nn.Sequential(self.backbone, self.bottleneck)
+        self.feature_extractor = lambda x: self.bottleneck(self.backbone(x))
         self.fc = nn.Linear(embed_dim, nclass)
 
     def forward(self, x):
@@ -21,7 +21,7 @@ class BasicModel(nn.Module):
         return class_prediction
 
 
-def get_basic_model(backbone, nclass=31, fc_dim=2048, embed_dim=1024):
+def get_basic_model(backbone, nclass=31, fc_dim=2048, embed_dim=256):
     model = BasicModel(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass)
 
     for name, param in model.named_parameters():

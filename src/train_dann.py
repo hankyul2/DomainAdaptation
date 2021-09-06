@@ -5,12 +5,12 @@ from src.model.models import get_model
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
 
-from torch.optim import SGD, lr_scheduler as LR
 import torch.nn.functional as F
 from torch import nn
 
 import numpy as np
 
+from src.optimizer import StepOpt
 from src.utils import AverageMeter
 
 
@@ -66,29 +66,6 @@ class MyLoss(nn.Module):
         return loss_cls, loss_da_src, loss_da_tgt
 
 
-class MyOpt:
-    def __init__(self, model, lr, nbatch, weight_decay=0.0005, momentum=0.95):
-        self.optimizer = SGD([
-            {'params': model.backbone.parameters(), 'lr': lr},
-            {'params': model.bottleneck.parameters()},
-            {'params': model.domain_classifier.parameters()},
-            {'params': model.fc.parameters()}
-        ], lr=lr * 10, momentum=momentum, weight_decay=weight_decay)
-        self.scheduler = LR.MultiStepLR(self.optimizer, milestones=[20, 40], gamma=0.1)
-        self.nbatch = nbatch
-        self.step_ = 0
-
-    def step(self):
-        self.optimizer.step()
-        self.step_ += 1
-        if self.step_ % self.nbatch == 0:
-            self.scheduler.step()
-            self.step_ = 0
-
-    def zero_grad(self):
-        self.optimizer.zero_grad()
-
-
 def run(args):
     # step 1. prepare dataset
     datasets = get_dataset(args.src, args.tgt)
@@ -100,7 +77,7 @@ def run(args):
     model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
 
     # step 3. training tool (criterion, optimizer)
-    optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl))
+    optimizer = StepOpt(model, lr=args.lr, nbatch=len(src_dl))
     criterion = MyLoss()
 
     # step 4. train

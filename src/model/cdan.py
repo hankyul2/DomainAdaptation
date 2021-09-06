@@ -30,7 +30,7 @@ class CDAN(nn.Module):
         super().__init__()
         self.backbone = backbone
         self.bottleneck = nn.Linear(fc_dim, embed_dim)
-        self.feature_extractor = nn.Sequential(self.backbone, self.bottleneck)
+        self.feature_extractor = lambda x: self.bottleneck(self.backbone(x))
         self.fc = nn.Linear(embed_dim, nclass)
         self.domain_classifier = DomainClassifier(embed_dim * nclass, hidden_dim)
         self.nda = embed_dim * nclass
@@ -60,7 +60,7 @@ def conditional_entropy(pred_dom, y_dom, pred_cls, alpha):
     return conditional_loss
 
 
-def get_cdan(backbone, fc_dim=2048, embed_dim=1024, nclass=31, hidden_dim=1024):
+def get_cdan(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024):
     model = CDAN(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass, hidden_dim=hidden_dim)
 
     for name, param in model.named_parameters():
