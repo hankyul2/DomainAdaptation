@@ -27,6 +27,7 @@ parser.add_argument('-c', '--ncrop', type=int, default=10, help='Enter the numbe
 parser.add_argument('-i', '--iter', type=int, default=1, help='Enter the number of iteration you want to run')
 parser.add_argument('--use_ncrop_for_valid', action='store_true',
                     help='If specify, it will use ncrop for validation')
+parser.add_argument('--save_best_result', action='store_true', help='If specify, it will save best result into readme')
 
 
 def init(args):
@@ -47,7 +48,10 @@ if __name__ == '__main__':
     init(args)
     print('Model name is {}'.format(args.model_name))
 
-    if args.model_name in ['BASE']:
+    if args.save_best_result:
+        from src.log import run
+
+    elif args.model_name in ['BASE']:
         from src.train import run
 
     elif args.model_name in ['DANN']:

@@ -3,10 +3,9 @@ from easydict import EasyDict as edict
 from torch.optim import SGD
 import torch.optim.lr_scheduler as LR
 
-from src.basicModel import get_model
-from src.label_smoothing import LabelSmoothing
-from src.resnet import get_resnet
-from src.ModelWrapper import BaseModelWrapper
+from src.model.models import get_model
+from src.loss.label_smoothing import LabelSmoothing
+from src.base_model_wrapper import BaseModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
 
@@ -50,8 +49,7 @@ def run(args):
 
     # step 2. load model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    backbone = get_resnet()
-    model = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num).to(device)
+    model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
 
     # step 3. prepare training tool
     criterion = LabelSmoothing()

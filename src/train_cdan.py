@@ -1,10 +1,9 @@
 import torch
 
-from src.DomainModelWrapper import DomainModelWrapper
-from src.cdan import get_model, conditional_entropy
+from src.domain_model_wrapper import DomainModelWrapper
+from src.model.cdan import conditional_entropy
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
-from src.resnet import get_resnet
 
 from torch.optim import SGD, lr_scheduler as LR
 import torch.nn.functional as F
@@ -12,6 +11,7 @@ from torch import nn
 
 import numpy as np
 
+from src.model.models import get_model
 from src.utils import AverageMeter
 
 
@@ -105,8 +105,7 @@ def run(args):
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    backbone = get_resnet()
-    model = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num, hidden_dim=1024).to(device)
+    model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
 
     # step 3. training tool (criterion, optimizer)
     optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl))

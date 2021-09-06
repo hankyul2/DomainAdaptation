@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 
@@ -20,7 +21,7 @@ class BasicModel(nn.Module):
         return class_prediction
 
 
-def get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31):
+def get_basic_model(backbone, nclass=31, fc_dim=2048, embed_dim=1024):
     model = BasicModel(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass)
 
     for name, param in model.named_parameters():

@@ -2,14 +2,14 @@ import copy
 
 import torch
 
-from src.DomainModelWrapper import DomainModelWrapper
-from src.dann import get_model
+from src.domain_model_wrapper import DomainModelWrapper
+from src.model.dann import get_dann
 from src.dataset import get_dataset, convert_to_dataloader
-from src.fixbi import Fixbi
+from src.loss.fixbi import Fixbi
 from src.log import get_log_name, Result
-from src.resnet import get_resnet
+from src.model.resnet import get_resnet
 
-from torch.optim import SGD, lr_scheduler as LR
+from torch.optim import SGD
 
 from src.utils import AverageMeter
 
@@ -105,8 +105,8 @@ def run(args):
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     backbone = get_resnet()
-    model_sdm = get_model(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num, hidden_dim=1024,
-                      src=args.src, tgt=args.tgt).to(device)
+    model_sdm = get_dann(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num, hidden_dim=1024,
+                         src=args.src, tgt=args.tgt).to(device)
     model_tdm = copy.deepcopy(model_sdm)
 
     # step 3. training tool (criterion, optimizer)

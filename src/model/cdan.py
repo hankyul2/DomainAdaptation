@@ -2,8 +2,8 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from src.entropy import entropy
-from src.grl import GRL
+from src.loss.im import entropy
+from src.model.grl import GRL
 
 
 class DomainClassifier(nn.Module):
@@ -60,7 +60,7 @@ def conditional_entropy(pred_dom, y_dom, pred_cls, alpha):
     return conditional_loss
 
 
-def get_model(backbone, fc_dim=2048, embed_dim=256, nclass=31, hidden_dim=1024):
+def get_cdan(backbone, fc_dim=2048, embed_dim=1024, nclass=31, hidden_dim=1024):
     model = CDAN(backbone, fc_dim=fc_dim, embed_dim=embed_dim, nclass=nclass, hidden_dim=hidden_dim)
 
     for name, param in model.named_parameters():

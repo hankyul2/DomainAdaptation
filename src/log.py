@@ -171,5 +171,6 @@ def setup_directory(log_name):
         ).mkdir(exist_ok=True, parents=True)
         clear_unused_log('log/{}/{}'.format(prefix, log_name))
 
+
 def run(args):
     Result().update_best_result()

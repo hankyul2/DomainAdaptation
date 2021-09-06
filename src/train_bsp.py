@@ -1,11 +1,11 @@
 import torch
 
-from src.DomainModelWrapper import DomainModelWrapper
-from src.bsp import BSP
-from src.cdan import conditional_entropy
+from src.domain_model_wrapper import DomainModelWrapper
+from src.loss.bsp import BSP
+from src.model.cdan import conditional_entropy
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
-from src.resnet import get_resnet
+from src.model.models import get_model
 
 from torch.optim import SGD, lr_scheduler as LR
 import torch.nn.functional as F
@@ -99,18 +99,9 @@ class MyOpt:
         self.optimizer.zero_grad()
 
 
-def decide_get_model_import_statment(use_cdan):
-    if use_cdan:
-        from src.cdan import get_model
-    else:
-        from src.dann import get_model
-    return get_model
-
-
 def run(args):
     # step 0. parse model name
     use_entropy = True if 'E' in args.model_name else False
-    use_cdan = True if 'C' in args.model_name else False
 
     # step 1. prepare dataset
     datasets = get_dataset(args.src, args.tgt)
@@ -119,9 +110,7 @@ def run(args):
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    backbone = get_resnet()
-    get_model = decide_get_model_import_statment(use_cdan)
-    model = get_model(backbone, fc_dim=2048, embed_dim=256, nclass=datasets[0].class_num, hidden_dim=1024).to(device)
+    model = get_model(args.model_name.split('_')[0], nclass=datasets[0].class_num).to(device)
 
     # step 3. training tool (criterion, optimizer)
     optimizer = MyOpt(model, lr=args.lr, nbatch=len(src_dl))

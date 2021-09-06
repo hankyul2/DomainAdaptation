@@ -8,10 +8,10 @@ class LabelSmoothing(nn.Module):
         super(LabelSmoothing, self).__init__()
         self.alpha = alpha
         self.certainty = 1.0 - alpha
-        self.criterion = nn.KLDivLoss(reduction='mean')
+        self.criterion = nn.KLDivLoss(reduction='batchmean')
 
     def forward(self, x, y):
         b, c = x.shape
         label = torch.full((b, c), self.alpha/(c-1)).to(y.device)
         label = label.scatter(1, y.unsqueeze(1), self.certainty)
-        return self.criterion(F.log_softmax(x), label)
+        return self.criterion(F.log_softmax(x, dim=-1), label)
