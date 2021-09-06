@@ -1,25 +1,22 @@
 session_name: da_base
 windows:
-  - window_name: amazon to dslr
+  - window_name: amazon
     panes:
-      - python3 main.py -g 5 -m base -s amazon -t dslr -i 3
-  - window_name: amazon to webcam
-    panes:
-      - python3 main.py -g 5 -m base -s amazon -t webcam -i 3
+      - shell_command:
+        - python3 main.py -g 5 -m base -s amazon -t dslr -l 1e-2 -e 100 -i 3
+        - python3 main.py -g 5 -m base -s amazon -t webcam -l 1e-2 -e 100 -i 3
 
-  - window_name: dslr to amazon
+  - window_name: dslr
     panes:
-      - python3 main.py -g 6 -m base -s dslr -t amazon -i 3
-  - window_name: dslr to webcam
-    panes:
-      - python3 main.py -g 6 -m base -s dslr -t webcam -i 3
+      - shell_command:
+        - python3 main.py -g 5 -m base -s dslr -t amazon -l 1e-2 -e 100 -i 3
+        - python3 main.py -g 5 -m base -s dslr -t webcam -l 1e-2 -e 100 -i 3
 
-  - window_name: webcam to amazon
+  - window_name: webcam
     panes:
-      - python3 main.py -g 7 -m base -s webcam -t amazon -i 3
-  - window_name: webcam to dslr
-    panes:
-      - python3 main.py -g 7 -m base -s webcam -t dslr -i 3
+      - shell_command:
+        - python3 main.py -g 5 -m base -s webcam -t amazon -l 1e-2 -e 100 -i 3
+        - python3 main.py -g 5 -m base -s webcam -t dslr -l 1e-2 -e 100 -i 3
 
   - window_name: tensorboard
     panes:

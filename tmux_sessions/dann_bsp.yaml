@@ -2,24 +2,24 @@ session_name: da_dann_bsp
 windows:
   - window_name: amazon to dslr
     panes:
-      - python3 main.py -g 5 -m dann_bsp -s amazon -t dslr -i 3
+      - python3 main.py -g 5 -m dann_bsp -s amazon -t dslr -e 50 -l 3e-3 -i 3
   - window_name: amazon to webcam
     panes:
-      - python3 main.py -g 6 -m dann_bsp -s amazon -t webcam -i 3
+      - python3 main.py -g 6 -m dann_bsp -s amazon -t webcam -e 50 -l 3e-3 -i 3
 
   - window_name: dslr to amazon
     panes:
-      - python3 main.py -g 7 -m dann_bsp -s dslr -t amazon -i 3
+      - python3 main.py -g 7 -m dann_bsp -s dslr -t amazon -e 50 -l 3e-3 -i 3
   - window_name: dslr to webcam
     panes:
-      - python3 main.py -g 5 -m dann_bsp -s dslr -t webcam -i 3
+      - python3 main.py -g 5 -m dann_bsp -s dslr -t webcam -e 50 -l 3e-3 -i 3
 
   - window_name: webcam to amazon
     panes:
-      - python3 main.py -g 6 -m dann_bsp -s webcam -t amazon -i 3
+      - python3 main.py -g 6 -m dann_bsp -s webcam -t amazon -e 50 -l 3e-3 -i 3
   - window_name: webcam to dslr
     panes:
-      - python3 main.py -g 7 -m dann_bsp -s webcam -t dslr -i 3
+      - python3 main.py -g 7 -m dann_bsp -s webcam -t dslr -e 50 -l 3e-3 -i 3
 
   - window_name: tensorboard
     panes:
