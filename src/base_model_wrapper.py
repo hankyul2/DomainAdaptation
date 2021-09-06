@@ -44,7 +44,7 @@ class BaseModelWrapper:
 
     def save_best_weight(self, model, top1_acc, epoch):
         if top1_acc > self.best_acc:
-            self.best_acc = top1_acc
+            self.best_acc = top1_acc.item()
             self.best_epoch = epoch
             self.log('Saving best model({:07.4f}%) weight to {}'.format(top1_acc, self.log_best_weight_path))
             torch.save({'weight': model.state_dict(), 'top1_acc': top1_acc}, self.log_best_weight_path)
@@ -70,7 +70,7 @@ class BaseModelWrapper:
             self.progress = ProgressMeter(len(dl), [self.batch_time, self.losses, self.top1, self.top5],
                                           prefix='VALID: ')
 
-    def forward(self, x, y):
+    def forward(self, x, y, epoch):
         std_y_hat = self.model(x)
         return self.criterion(std_y_hat, y), std_y_hat
 
@@ -84,7 +84,7 @@ class BaseModelWrapper:
             self.data_time.update(time.time() - end)
 
             x, y = x.to(self.device), y.to(self.device)
-            loss, std_y_hat = self.forward(x, y)
+            loss, std_y_hat = self.forward(x, y, epoch)
 
             acc1, acc5 = accuracy(std_y_hat, y, topk=(1, 5))
             self.losses.update(loss.item(), x.size(0))

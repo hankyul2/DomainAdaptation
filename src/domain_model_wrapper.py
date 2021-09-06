@@ -1,6 +1,6 @@
 import time
 
-from src.ModelWrapper import BaseModelWrapper
+from src.base_model_wrapper import BaseModelWrapper
 from src.utils import accuracy
 
 
