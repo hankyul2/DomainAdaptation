@@ -3,10 +3,10 @@ import copy
 import torch
 
 from src.domain_model_wrapper import DomainModelWrapper
-from src.model.dann import get_dann
 from src.dataset import get_dataset, convert_to_dataloader
 from src.loss.fixbi import Fixbi
 from src.log import get_log_name, Result
+from src.model.models import get_model
 from src.model.resnet import get_resnet
 
 from torch.optim import SGD
@@ -60,36 +60,33 @@ class ModelWrapper(DomainModelWrapper):
 class MyOpt:
     def __init__(self, model_sdm, model_tdm, criterion, lr, nepoch, nbatch, weight_decay=0.005, momentum=0.9):
         self.optimizer_sdm = SGD([
-            {'params': model_sdm.backbone.parameters()},
-            {'params': model_sdm.bottleneck.parameters()},
-            {'params': model_sdm.fc.parameters()},
-            {'params': criterion.T_sdm}
+            {'params': model_sdm.backbone.parameters(), 'lr0': lr * 0.1},
+            {'params': model_sdm.bottleneck.parameters(), 'lr0': lr},
+            {'params': model_sdm.fc.parameters(), 'lr0': lr},
+            {'params': criterion.T_sdm, 'lr0': lr}
         ], lr=lr, momentum=momentum, weight_decay=weight_decay)
         self.optimizer_tdm = SGD([
-            {'params': model_tdm.backbone.parameters()},
-            {'params': model_tdm.bottleneck.parameters()},
-            {'params': model_tdm.fc.parameters()},
-            {'params': criterion.T_tdm}
+            {'params': model_tdm.backbone.parameters(), 'lr0': lr * 0.1},
+            {'params': model_tdm.bottleneck.parameters(), 'lr0': lr},
+            {'params': model_tdm.fc.parameters(), 'lr0': lr},
+            {'params': criterion.T_tdm, 'lr0': lr}
         ], lr=lr, momentum=momentum, weight_decay=weight_decay)
-        self.lr = lr
-        self.nepoch = nepoch
-        self.nbatch = nbatch
         self.total_step_ = nepoch * nbatch
         self.step_ = 0
 
     def step(self):
         self.step_ += 1
-        lr = self.get_lr()
+        decay = self.get_decay()
 
         for param in self.optimizer_sdm.param_groups + self.optimizer_tdm.param_groups:
-            param['lr'] = lr
+            param['lr'] = param['lr0'] * decay
 
         self.optimizer_sdm.step()
         self.optimizer_tdm.step()
 
-    def get_lr(self, step=None):
+    def get_decay(self, step=None):
         step = step if step else self.step_
-        return self.lr / (1.0 + 10.0 * (step/self.total_step_)) ** 0.75
+        return (1.0 + 10.0 * step/self.total_step_) ** (-0.75)
 
     def zero_grad(self):
         self.optimizer_sdm.zero_grad()
@@ -105,8 +102,7 @@ def run(args):
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     backbone = get_resnet()
-    model_sdm = get_dann(backbone, fc_dim=2048, embed_dim=1024, nclass=datasets[0].class_num, hidden_dim=1024,
-                         src=args.src, tgt=args.tgt).to(device)
+    model_sdm = get_model(args.model_name, nclass=datasets[0].class_num, src=args.src, tgt=args.tgt).to(device)
     model_tdm = copy.deepcopy(model_sdm)
 
     # step 3. training tool (criterion, optimizer)
