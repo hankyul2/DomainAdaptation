@@ -123,7 +123,7 @@ class BaseModelWrapper:
             self.batch_time.update(time.time() - end)
             end = time.time()
 
-            if step % debug_step == 0:
+            if step != 0 and debug_step != 0 and step % debug_step == 0:
                 self.log(self.progress.display(step))
 
         return self.losses.avg, self.top1.avg

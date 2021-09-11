@@ -1,5 +1,6 @@
 import torch
 from easydict import EasyDict as edict
+from torch import nn
 
 from src.model.models import get_model
 from src.loss.label_smoothing import LabelSmoothing
@@ -29,7 +30,7 @@ def run(args):
     model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
 
     # step 3. prepare training tool
-    criterion = LabelSmoothing()
+    criterion = LabelSmoothing() # nn.CrossEntropyLoss()
     optimizer = MultiOpt(model, lr=args.lr, nbatch=len(src_dl), nepoch=args.nepoch)
 
     # step 4. train

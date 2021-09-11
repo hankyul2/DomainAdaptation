@@ -14,7 +14,7 @@ def load_from_zoo(pretrained_model_save_path="pretrained_model_weight"):
 
 def get_resnet(pretrained=True):
     net = models.resnet50(pretrained=False)
-    net.fc = nn.Identity()
+    net.fc = nn.Flatten()
 
     if pretrained:
         state_dict = load_from_zoo()

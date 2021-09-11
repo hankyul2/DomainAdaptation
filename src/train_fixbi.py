@@ -7,7 +7,6 @@ from src.dataset import get_dataset, convert_to_dataloader
 from src.loss.fixbi import Fixbi
 from src.log import get_log_name, Result
 from src.model.models import get_model
-from src.model.resnet import get_resnet
 
 from torch.optim import SGD
 
@@ -101,8 +100,7 @@ def run(args):
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    backbone = get_resnet()
-    model_sdm = get_model(args.model_name, nclass=datasets[0].class_num, src=args.src, tgt=args.tgt).to(device)
+    model_sdm = get_model('DANN', nclass=datasets[0].class_num, src=args.src, tgt=args.tgt).to(device)
     model_tdm = copy.deepcopy(model_sdm)
 
     # step 3. training tool (criterion, optimizer)

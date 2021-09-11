@@ -43,6 +43,7 @@ def fix_seed(random_seed):
     random.seed(random_seed)
     torch.manual_seed(random_seed)
 
+
 if __name__ == '__main__':
     args = parser.parse_args()
     init(args)
