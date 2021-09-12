@@ -1,7 +1,7 @@
 import torch
 
-from src.domain_model_wrapper import DomainModelWrapper
-from src.model.cdan import conditional_entropy
+from src.train_da.domain_model_wrapper import DomainModelWrapper
+from src.model.models import get_model
 from src.dataset import get_dataset, convert_to_dataloader
 from src.log import get_log_name, Result
 
@@ -10,14 +10,13 @@ from torch import nn
 
 import numpy as np
 
-from src.model.models import get_model
 from src.optimizer import StepOpt
 from src.utils import AverageMeter
 
 
 class ModelWrapper(DomainModelWrapper):
-    def __init__(self, log_name, model, device, criterion, optimizer, max_step, gamma=10):
-        super().__init__(log_name)
+    def __init__(self, log_name, start_time, model, device, criterion, optimizer, max_step, gamma=10):
+        super().__init__(log_name, start_time)
         self.model = model
         self.device = device
         self.criterion = criterion
@@ -32,7 +31,7 @@ class ModelWrapper(DomainModelWrapper):
         feat_src, cls_src, da_src = self.model(x_src, alpha)
         feat_tgt, cls_tgt, da_tgt = self.model(x_tgt, alpha)
         loss_cls, loss_da_src, loss_da_tgt = \
-            self.criterion(cls_src, cls_tgt, da_src, da_tgt, y_src, alpha)
+            self.criterion(cls_src, cls_tgt, da_src, da_tgt, y_src)
         loss = loss_cls + loss_da_src + loss_da_tgt
 
         self.cls_losses.update(loss_cls.item(), x_src.size(0))
@@ -56,25 +55,18 @@ class ModelWrapper(DomainModelWrapper):
 
 
 class MyLoss(nn.Module):
-    def __init__(self, use_entropy, alpha=1):
+    def __init__(self, alpha=1):
         super(MyLoss, self).__init__()
-        if use_entropy:
-            self.domain_criterion = lambda x, y, w, z: conditional_entropy(x, y, w, z)
-        else:
-            self.domain_criterion = lambda x, y, w, z: F.cross_entropy(x, y)
         self.alpha = alpha
 
-    def forward(self, cls_src, cls_tgt, da_src, da_tgt, y_src, alpha):
+    def forward(self, cls_src, cls_tgt, da_src, da_tgt, y_src):
         loss_cls = F.cross_entropy(cls_src, y_src)
-        loss_da_src = self.domain_criterion(da_src, torch.ones(y_src.size(0)).long().to(y_src.device), cls_src, alpha) * self.alpha
-        loss_da_tgt = self.domain_criterion(da_tgt, torch.zeros(y_src.size(0)).long().to(y_src.device), cls_tgt, alpha) * self.alpha
+        loss_da_src = F.cross_entropy(da_src, torch.ones(y_src.size(0)).long().to(y_src.device)) * self.alpha
+        loss_da_tgt = F.cross_entropy(da_tgt, torch.zeros(y_src.size(0)).long().to(y_src.device)) * self.alpha
         return loss_cls, loss_da_src, loss_da_tgt
 
 
 def run(args):
-    # step 0. parse model name
-    use_entropy = True if 'E' in args.model_name else False
-
     # step 1. prepare dataset
     datasets = get_dataset(args.src, args.tgt)
     src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, shuffle=True)
@@ -86,11 +78,11 @@ def run(args):
 
     # step 3. training tool (criterion, optimizer)
     optimizer = StepOpt(model, lr=args.lr, nbatch=len(src_dl))
-    criterion = MyLoss(use_entropy=use_entropy)
+    criterion = MyLoss()
 
     # step 4. train
-    model = ModelWrapper(log_name=get_log_name(args), model=model, device=device, optimizer=optimizer,
-                         criterion=criterion, max_step=len(src_dl) * args.nepoch)
+    model = ModelWrapper(log_name=args.log_name, start_time=args.start_time, model=model, device=device,
+                         optimizer=optimizer, criterion=criterion, max_step=len(src_dl) * args.nepoch)
     best_dl = test_dl if args.use_ncrop_for_valid else None
     model.fit((src_dl, tgt_dl), valid_dl, test_dl=best_dl, nepoch=args.nepoch)
 

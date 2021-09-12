@@ -34,7 +34,7 @@ def run(args):
     optimizer = MultiOpt(model, lr=args.lr, nbatch=len(src_dl), nepoch=args.nepoch)
 
     # step 4. train
-    model = ModelWrapper(log_name=get_log_name(args), start_time=args.start_time, model=model, device=device, optimizer=optimizer, criterion=criterion)
+    model = ModelWrapper(log_name=args.log_name, start_time=args.start_time, model=model, device=device, optimizer=optimizer, criterion=criterion)
     model.fit(src_dl, valid_dl, nepoch=args.nepoch)
 
     # step 5. evaluate

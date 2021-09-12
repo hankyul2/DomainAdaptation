@@ -79,16 +79,16 @@ if __name__ == '__main__':
         from src.train import run
 
     elif args.model_name in ['DANN']:
-        from src.train_dann import run
+        from src.train_da.train_dann import run
 
     elif args.model_name in ['CDAN', 'CDAN_E']:
-        from src.train_cdan import run
+        from src.train_da.train_cdan import run
 
     elif args.model_name in ['CDAN_BSP', 'CDAN_E_BSP', 'DANN_BSP', 'DANN_E_BSP']:
-        from src.train_bsp import run
+        from src.train_da.train_bsp import run
 
     elif args.model_name in ['FIXBI']:
-        from src.train_fixbi import run
+        from src.train_da.train_fixbi import run
 
     for iter in range(args.iter):
         run(args)

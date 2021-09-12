@@ -2,7 +2,7 @@ import copy
 
 import torch
 
-from src.domain_model_wrapper import DomainModelWrapper
+from src.train_da.domain_model_wrapper import DomainModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
 from src.loss.fixbi import Fixbi
 from src.log import get_log_name, Result
@@ -14,8 +14,8 @@ from src.utils import AverageMeter
 
 
 class ModelWrapper(DomainModelWrapper):
-    def __init__(self, log_name, model_sdm, model_tdm, device, criterion, optimizer):
-        super().__init__(log_name)
+    def __init__(self, log_name, start_time, model_sdm, model_tdm, device, criterion, optimizer):
+        super().__init__(log_name, start_time)
         self.model_sdm = model_sdm
         self.model_tdm = model_tdm
         self.model = model_tdm
@@ -108,8 +108,8 @@ def run(args):
     optimizer = MyOpt(model_sdm, model_tdm, criterion, lr=args.lr, nepoch=args.nepoch, nbatch=len(src_dl))
 
     # step 4. train
-    model = ModelWrapper(log_name=get_log_name(args), model_sdm=model_sdm, model_tdm=model_tdm, device=device,
-                         optimizer=optimizer, criterion=criterion)
+    model = ModelWrapper(log_name=args.log_name, start_time=args.start_time, model_sdm=model_sdm, model_tdm=model_tdm,
+                         device=device, optimizer=optimizer, criterion=criterion)
     best_dl = test_dl if args.use_ncrop_for_valid else None
     model.fit((src_dl, tgt_dl), valid_dl, test_dl=best_dl, nepoch=args.nepoch)
 

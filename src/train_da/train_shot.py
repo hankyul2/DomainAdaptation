@@ -15,8 +15,8 @@ from src.loss.label_smoothing import LabelSmoothing
 
 
 class ModelWrapper(BaseModelWrapper):
-    def __init__(self, log_name, model, device, criterion, optimizer):
-        super().__init__(log_name)
+    def __init__(self, log_name, start_time, model, device, criterion, optimizer):
+        super().__init__(log_name, start_time)
         self.model = model
         self.device = device
         self.criterion = criterion
@@ -94,8 +94,8 @@ def run(args):
     criterion = MyLoss()
 
     # step 4. train
-    model = ModelWrapper(log_name=get_log_name(args), model=model, device=device, optimizer=optimizer,
-                         criterion=criterion)
+    model = ModelWrapper(log_name=args.log_name, start_time=args.start_time, model=model, device=device,
+                         optimizer=optimizer, criterion=criterion)
     best_dl = test_dl if args.use_ncrop_for_valid else None
     model.fit(tgt_dl, valid_dl, test_dl=best_dl, nepoch=args.nepoch)
 
