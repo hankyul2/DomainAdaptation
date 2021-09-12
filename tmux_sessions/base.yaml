@@ -1,16 +1,22 @@
 session_name: da_base
 windows:
-  - window_name: test no 3
+  - window_name: amazon
     panes:
       - shell_command:
-        - python3 main.py -g 7 -m base -s amazon -t dslr -l 3e-3 -e 100 -i 3
-        - python3 main.py -g 7 -m base -s dslr -t amazon -l 3e-3 -e 100 -i 3
+        - python3 main.py -g 4 -m base -s amazon -t dslr -i 3
+        - python3 main.py -g 4 -m base -s amazon -t webcam -i 3
 
-  - window_name: test no 6
+  - window_name: dslr
     panes:
       - shell_command:
-          - python3 main.py -g 6 -m base -s amazon -t dslr -l 1e-2 -b 64 -e 100 -i 3
-          - python3 main.py -g 6 -m base -s dslr -t amazon -l 1e-2 -b 64 -e 100 -i 3
+          - python3 main.py -g 3 -m base -s dslr -t amazon -i 3
+          - python3 main.py -g 3 -m base -s dslr -t webcam -i 3
+
+  - window_name: webcam
+    panes:
+      - shell_command:
+          - python3 main.py -g 4 -m base -s webcam -t amazon -i 3
+          - python3 main.py -g 4 -m base -s webcam -t dslr -i 3
 
   - window_name: tensorboard
     panes:

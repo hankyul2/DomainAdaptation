@@ -1,10 +1,18 @@
 import glob
+import math
 import os
 import albumentations as A
 import torch
+from torch.utils.data import random_split
 
 from PIL import Image
 import numpy as np
+
+
+def split_train_valid(org_ds, valid_ratio=0.1, seed=1997):
+    return random_split(org_ds, [math.floor(len(org_ds) * (1 - valid_ratio)), math.ceil(len(org_ds) * valid_ratio)],
+                        generator=torch.Generator().manual_seed(seed))
+
 
 def get_path_label(names, name2list):
     dataset = []
@@ -43,7 +51,7 @@ def get_dataset(src, tgt):
     src_data_list, src_nclass = get_data_list(src)
     tgt_data_list, tgt_nclass = get_data_list(tgt)
 
-    transforms_train_valid = A.Compose([
+    transforms_train = A.Compose([
         A.SmallestMaxSize(256),
         A.CenterCrop(256, 256, p=1),
         A.RandomSizedCrop([200, 256], 224, 224),
@@ -57,23 +65,24 @@ def get_dataset(src, tgt):
         A.Normalize()
     ])
 
-    fake_size = max(len(src_data_list), len(tgt_data_list))
-    src_dataset = MyDataset(src_data_list, src_nclass, fake_size, transforms=transforms_train_valid)
-    tgt_dataset = MyDataset(tgt_data_list, tgt_nclass, fake_size, transforms=transforms_train_valid)
-    valid_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
-    test_dataset = MyDataset(tgt_data_list, transforms=transforms_test)
+    train_src_list, valid_src_list = split_train_valid(src_data_list)
+    fake_size = max(len(train_src_list), len(tgt_data_list))
+    train_src_ds = MyDataset(train_src_list, src_nclass, fake_size, transforms=transforms_train)
+    train_tgt_ds = MyDataset(tgt_data_list, tgt_nclass, fake_size, transforms=transforms_train)
+    valid_ds = MyDataset(valid_src_list, transforms=transforms_test)
+    test_ds = MyDataset(tgt_data_list, transforms=transforms_test)
 
     print('{} dataset number of class: {}'.format(src, src_nclass))
     print('{} dataset number of class: {}'.format(tgt, tgt_nclass))
     print('{} dataset len: {}'.format(src, len(src_data_list)))
     print('{} dataset len: {}'.format(tgt, len(tgt_data_list)))
 
-    return src_dataset, tgt_dataset, valid_dataset, test_dataset
+    return train_src_ds, train_tgt_ds, valid_ds, test_ds
 
 
-def convert_to_dataloader(datasets, batch_size, num_workers, train=True):
-    return [torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=train, num_workers=num_workers,
-                                        drop_last=True) for ds in datasets]
+def convert_to_dataloader(datasets, batch_size, num_workers, shuffle=True, drop_last=True, sampler_fn=lambda x: None):
+    return [torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
+                                        drop_last=drop_last, sampler=sampler_fn(ds)) for ds in datasets]
 
 
 class MyDataset(torch.utils.data.Dataset):

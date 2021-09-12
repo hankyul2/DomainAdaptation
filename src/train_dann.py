@@ -69,8 +69,8 @@ class MyLoss(nn.Module):
 def run(args):
     # step 1. prepare dataset
     datasets = get_dataset(args.src, args.tgt)
-    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, train=True)
-    valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, train=False)
+    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, shuffle=True)
+    valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, shuffle=False)
 
     # step 2. prepare model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

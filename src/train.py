@@ -11,8 +11,8 @@ from src.optimizer import MultiOpt
 
 
 class ModelWrapper(BaseModelWrapper):
-    def __init__(self, log_name, model, device, criterion, optimizer):
-        super().__init__(log_name)
+    def __init__(self, log_name, start_time, model, device, criterion, optimizer):
+        super().__init__(log_name, start_time)
         self.model = model
         self.device = device
         self.criterion = criterion
@@ -22,22 +22,26 @@ class ModelWrapper(BaseModelWrapper):
 def run(args):
     # step 1. prepare dataset
     datasets = get_dataset(args.src, args.tgt)
-    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, train=True)
-    valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, train=False)
+    src_dl, tgt_dl = convert_to_dataloader(datasets[:2], args.batch_size, args.num_workers, shuffle=True, drop_last=True)
+    valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, shuffle=False, drop_last=False)
 
     # step 2. load model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
 
     # step 3. prepare training tool
-    criterion = LabelSmoothing() # nn.CrossEntropyLoss()
+    criterion = LabelSmoothing()
     optimizer = MultiOpt(model, lr=args.lr, nbatch=len(src_dl), nepoch=args.nepoch)
 
     # step 4. train
-    model = ModelWrapper(log_name=get_log_name(args), model=model, device=device, optimizer=optimizer, criterion=criterion)
-    model.fit(src_dl, valid_dl, test_dl=None, nepoch=args.nepoch)
+    model = ModelWrapper(log_name=get_log_name(args), start_time=args.start_time, model=model, device=device, optimizer=optimizer, criterion=criterion)
+    model.fit(src_dl, valid_dl, nepoch=args.nepoch)
 
-    # (extra) step 5. save result
+    # step 5. evaluate
+    model.load_best_weight()
+    model.evaluate(test_dl)
+
+    # (extra) step 6. save result
     result_saver = Result()
     result_saver.save_result(args, model)
 

@@ -5,8 +5,8 @@ from src.utils import accuracy
 
 
 class DomainModelWrapper(BaseModelWrapper):
-    def __init__(self, log_name):
-        super(DomainModelWrapper, self).__init__(log_name)
+    def __init__(self, log_name, start_time):
+        super(DomainModelWrapper, self).__init__(log_name, start_time)
 
     def forward(self, x_src, x_tgt, y_src, epoch=None):
         raise NotImplementedError

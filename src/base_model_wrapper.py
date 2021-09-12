@@ -11,19 +11,24 @@ from src.utils import AverageMeter, ProgressMeter, accuracy
 
 
 class BaseModelWrapper:
-    def __init__(self, log_name):
-        self.best_acc = 0
-        self.best_epoch = 0
+    def __init__(self, log_name, start_time):
+        self.valid_best_acc = 0
+        self.valid_best_epoch = 0
         self.model = None
         self.device = None
+        self.writer = None
         self.logger = logging.getLogger()
         setup_directory(log_name)
-        self.time = datetime.datetime.now().strftime('%Y-%m-%d/%H-%M-%S')
+        self.time = start_time
         self.log_name = '{}/{}'.format(log_name, self.time)
         self.log_best_weight_path = 'log/best_weight/{}.pth'.format(self.log_name)
+        self.setup_writer(log_name)
+        self.setup_file_logger('log/text/{}.txt'.format(self.log_name))
+        self.trace_handler = torch.profiler.tensorboard_trace_handler('log/tensor_board/{}'.format(self.log_name))
+
+    def setup_writer(self, log_name):
         self.writer = SummaryWriter(log_dir='log/tensor_board/{}'.format(self.log_name),
                                     filename_suffix=log_name.replace('/', '_'))
-        self.setup_file_logger('log/text/{}.txt'.format(self.log_name))
 
     def setup_file_logger(self, log_file):
         hdlr = logging.FileHandler(log_file)
@@ -43,11 +48,11 @@ class BaseModelWrapper:
         self.writer.add_scalar('Accuracy/test', valid_acc, epoch)
 
     def save_best_weight(self, model, top1_acc, epoch):
-        if top1_acc > self.best_acc:
-            self.best_acc = top1_acc.item()
-            self.best_epoch = epoch
+        if top1_acc >= self.valid_best_acc:
+            self.valid_best_acc = top1_acc.item()
+            self.valid_best_epoch = epoch
             self.log('Saving best model({:07.4f}%) weight to {}'.format(top1_acc, self.log_best_weight_path))
-            torch.save({'weight': model.state_dict(), 'top1_acc': top1_acc}, self.log_best_weight_path)
+            torch.save({'weight': model.state_dict(), 'valid_best_acc': top1_acc}, self.log_best_weight_path)
 
     def load_best_weight(self, path=None):
         path = path if path else self.log_best_weight_path
@@ -69,6 +74,9 @@ class BaseModelWrapper:
         elif mode == 'valid':
             self.progress = ProgressMeter(len(dl), [self.batch_time, self.losses, self.top1, self.top5],
                                           prefix='VALID: ')
+        elif mode == 'test':
+            self.progress = ProgressMeter(len(dl), [self.batch_time, self.losses, self.top1, self.top5],
+                                          prefix='TEST: ')
 
     def forward(self, x, y, epoch):
         std_y_hat = self.model(x)
@@ -128,7 +136,7 @@ class BaseModelWrapper:
 
         return self.losses.avg, self.top1.avg
 
-    def fit(self, train_dl, valid_dl, test_dl=None, nepoch=50):
+    def fit(self, train_dl, valid_dl, nepoch=50):
         best_acc = 0
         best_acc_arg = 0
 
@@ -136,11 +144,9 @@ class BaseModelWrapper:
             train_loss, train_acc = self.train(train_dl, epoch)
             valid_loss, valid_acc = self.valid(valid_dl)
 
-            if valid_acc > best_acc:
+            if valid_acc >= best_acc:
                 best_acc = valid_acc
                 best_acc_arg = epoch + 1
-                if test_dl:
-                    self.evaluate(test_dl)
                 self.save_best_weight(self.model, best_acc, best_acc_arg)
 
             print('=' * 150)
@@ -154,24 +160,28 @@ class BaseModelWrapper:
             self.log_tensorboard(epoch, train_loss, train_acc, valid_loss, valid_acc)
 
     @torch.no_grad()
-    def evaluate(self, test_dl, ncrop=10):
+    def evaluate(self, dl):
+        debug_step = len(dl) // 10
+        self.init_progress(dl, mode='test')
         self.model.eval()
-        total_loss = total_acc = total_y_hat = 0
-        for iter in range(ncrop):
-            y_hat = []
-            total_y = []
-            for x, y in test_dl:
-                x, y = x.float().to(self.device), y.long().to(self.device)
-                y_hat.append(self.model.predict(x))
-                total_y.append(y)
-            total_y_hat += torch.cat(y_hat, dim=0)
-            total_y = torch.cat(total_y, dim=0)
 
-        total_loss = F.cross_entropy(total_y_hat / ncrop, total_y).clone().detach().item()
-        _, y_label = total_y_hat.max(dim=1)
-        total_acc = (y_label == total_y).sum().item() / len(total_y)
+        end = time.time()
+        for step, (x, y) in enumerate(dl):
+            x, y = x.float().to(self.device), y.long().to(self.device)
+            y_hat = self.model.predict(x)
+            loss = F.cross_entropy(y_hat, y)
 
-        print('=' * 150)
-        self.log('[EVALUATE] {}-crop loss {:07.4f}  |  {}-crop acc {:07.4f}%'.format(ncrop, total_loss, ncrop,
-                                                                                     total_acc * 100))
-        print('=' * 150)
+            acc1, acc5 = accuracy(y_hat, y, topk=(1, 5))
+            self.losses.update(loss.item(), x.size(0))
+            self.top1.update(acc1[0], x.size(0))
+            self.top5.update(acc5[0], x.size(0))
+
+            self.batch_time.update(time.time() - end)
+            end = time.time()
+
+            if step % debug_step == 0:
+                self.log(self.progress.display(step))
+
+        self.top1_acc = self.top1.avg.item()
+        self.top5_acc = self.top5.avg.item()
+        self.max_gpu_usage = round(torch.cuda.max_memory_allocated(self.device) // 1e6, 2)

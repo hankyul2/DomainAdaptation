@@ -23,15 +23,15 @@ class Result:
         self.result_path = result_path
         self.best_result_save_path = best_result_path
 
-        self.headers = ['no', 'model_name', 'src', 'tgt', 'time', 'best_acc', 'best_epoch', 'nepoch',
-                        'lr', 'batch_size', 'log_best_weight_path']
+        self.headers = ['no', 'model_name', 'src', 'tgt', 'time', 'top1_acc', 'top5_acc', 'valid_best_acc', 'valid_best_epoch',
+                        'nepoch', 'lr', 'total_batch_size', 'world_size', 'max_gpu_usage', 'log_best_weight_path']
         self.best_result_identity_name = 'model_name'
         self.best_result_column_idx = [1, 2, 3]
-        self.best_result_save_idx = list(range(len(self.headers) - 1))
-
-        self.best_result_identity_idx = self.headers.index(self.best_result_identity_name)
-        self.acc_idx = self.headers.index('best_acc')
+        self.acc_idx = self.headers.index('top1_acc')
         self.weight_path_idx = self.headers.index('log_best_weight_path')
+        self.best_result_save_idx = list(range(len(self.headers) - 1))
+        self.best_result_identity_idx = self.headers.index(self.best_result_identity_name)
+
         self.setup_directory()
         self.setup_logfile()
 
