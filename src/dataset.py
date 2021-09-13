@@ -1,6 +1,8 @@
 import glob
 import math
 import os
+import random
+
 import albumentations as A
 import torch
 from torch.utils.data import random_split
@@ -92,18 +94,23 @@ class MyDataset(torch.utils.data.Dataset):
         super().__init__()
         self.df = df
         self.size = len(self.df)
-        self.fake_size = fake_size
+        self.fake_size = fake_size if fake_size else self.size
         self.transforms = transforms
         self.class_num = class_num
+        self.limit = self.fake_size - (self.fake_size % self.size)
 
     def __len__(self):
-        return self.fake_size if self.fake_size else self.size
+        return self.fake_size
 
     def __getitem__(self, idx):
-        img, label = self.df[idx % self.size]
+        img, label = self.df[self.compute_idx(idx)]
         img = Image.open(img).convert('RGB')
 
         if self.transforms is not None:
             img = np.transpose(self.transforms(image=np.array(img))['image'], (2, 0, 1))
 
         return img, label
+
+    def compute_idx(self, idx):
+        """This method is made for uniform distribution of smaller dataset"""
+        return idx % self.size if idx < self.limit else random.randint(0, self.size-1)
