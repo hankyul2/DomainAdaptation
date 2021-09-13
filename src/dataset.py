@@ -74,8 +74,10 @@ def get_dataset(src, tgt):
 
     print('{} dataset number of class: {}'.format(src, src_nclass))
     print('{} dataset number of class: {}'.format(tgt, tgt_nclass))
-    print('{} dataset len: {}'.format(src, len(src_data_list)))
-    print('{} dataset len: {}'.format(tgt, len(tgt_data_list)))
+    print('{} train src dataset len: {}'.format(src, len(train_src_list)))
+    print('{} train tgt dataset len: {}'.format(tgt, len(train_tgt_ds)))
+    print('{} valid src dataset len: {}'.format(src, len(valid_ds)))
+    print('{} test tgt dataset len: {}'.format(src, len(test_ds)))
 
     return train_src_ds, train_tgt_ds, valid_ds, test_ds
 
