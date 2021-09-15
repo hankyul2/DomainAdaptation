@@ -84,9 +84,9 @@ def get_dataset(src, tgt):
     return train_src_ds, train_tgt_ds, valid_ds, test_ds
 
 
-def convert_to_dataloader(datasets, batch_size, num_workers, shuffle=True, drop_last=True, sampler_fn=lambda x: None):
-    return [torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
-                                        drop_last=drop_last, sampler=sampler_fn(ds)) for ds in datasets]
+def convert_to_dataloader(datasets, batch_size, num_workers, shuffle=True, drop_last=True, sampler_fn=None):
+    return [torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=(shuffle if not sampler_fn else False), num_workers=num_workers,
+                                        drop_last=drop_last, sampler=(sampler_fn(ds) if sampler_fn else None)) for ds in datasets]
 
 
 class MyDataset(torch.utils.data.Dataset):

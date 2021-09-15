@@ -7,7 +7,7 @@ from src.model.resnet import get_resnet
 from src.model.basic import get_basic_model
 
 
-def get_model(model_name, nclass, src=None, tgt=None, **kwargs):
+def get_model(model_name, nclass, device, src=None, tgt=None, **kwargs):
     backbone = get_resnet(pretrained=True)
 
     if model_name == 'BASE':
@@ -23,4 +23,4 @@ def get_model(model_name, nclass, src=None, tgt=None, **kwargs):
             Result().get_best_pretrained_model_path(model_name, src, tgt), map_location='cpu')['weight'])
 
 
-    return model
+    return model.to(device)

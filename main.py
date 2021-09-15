@@ -8,6 +8,7 @@ import random
 
 import torch
 
+from src.distributed.multi_gpus import run_multi_gpus
 from src.log import get_log_name
 
 
@@ -23,7 +24,7 @@ parser.add_argument('-m', '--model_name', type=str.upper, default='', choices=[
 ], help='Enter model name')
 parser.add_argument('-s', '--src', type=str, default='', help='Enter source dataset')
 parser.add_argument('-t', '--tgt', type=str, default='', help='Enter target dataset')
-parser.add_argument('-b', '--batch_size', type=int, default=32, help='Enter batch size for train step')
+parser.add_argument('-b', '--batch_size', type=int, default=64, help='Enter batch size for train step')
 parser.add_argument('-w', '--num_workers', type=int, default=4, help='Enter the number of workers per dataloader')
 parser.add_argument('-l', '--lr', type=float, default=1e-2, help='Enter learning rate')
 parser.add_argument('-e', '--nepoch', type=int, default=100, help='Enter the number of epoch')
@@ -69,10 +70,7 @@ def init(args):
     show_info(args)
 
 
-if __name__ == '__main__':
-    args = parser.parse_args()
-    init(args)
-
+def main(args):
     if args.save_best_result:
         from src.log import run
 
@@ -91,6 +89,16 @@ if __name__ == '__main__':
     elif args.model_name in ['FIXBI']:
         from src.train_da.train_fixbi import run
 
+    run(args)
+
+
+if __name__ == '__main__':
+    args = parser.parse_args()
+    init(args)
+
     for iter in range(args.iter):
-        run(args)
+        if args.is_multi_gpu:
+            run_multi_gpus(main, args)
+        else:
+            main(args)
         init_cli_arg(args)

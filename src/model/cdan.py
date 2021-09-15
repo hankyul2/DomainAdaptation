@@ -35,7 +35,7 @@ class CDAN(nn.Module):
         self.domain_classifier = DomainClassifier(embed_dim * nclass, hidden_dim)
         self.nda = embed_dim * nclass
 
-    def forward(self, x, alpha):
+    def forward_impl(self, x, alpha):
         b, _, _, _ = list(map(lambda x: int(x), x.shape))
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
@@ -48,6 +48,9 @@ class CDAN(nn.Module):
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
         return class_prediction
+
+    def forward(self, *args):
+        return self.forward_impl(*args) if self.training else self.predict(*args)
 
 
 def conditional_entropy(pred_dom, y_dom, pred_cls, alpha):

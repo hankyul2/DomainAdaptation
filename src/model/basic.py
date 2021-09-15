@@ -13,7 +13,7 @@ class BasicModel(nn.Module):
         self.feature_extractor = lambda x: self.dropout(F.tanh(self.bottleneck(self.backbone(x))))
         self.fc = nn.Linear(embed_dim, nclass)
 
-    def forward(self, x):
+    def forward_impl(self, x):
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
         return class_prediction
@@ -22,6 +22,9 @@ class BasicModel(nn.Module):
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
         return class_prediction
+
+    def forward(self, *args):
+        return self.forward_impl(*args) if self.training else self.predict(*args)
 
 
 def get_basic_model(backbone, nclass=31, fc_dim=2048, embed_dim=256):

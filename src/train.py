@@ -26,8 +26,8 @@ def run(args):
     valid_dl, test_dl = convert_to_dataloader(datasets[2:], args.batch_size, args.num_workers, shuffle=False, drop_last=False)
 
     # step 2. load model
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = get_model(args.model_name, nclass=datasets[0].class_num).to(device)
+    device = torch.device('cuda:{}'.format(args.rank) if torch.cuda.is_available() else 'cpu')
+    model = get_model(args.model_name, nclass=datasets[0].class_num, device=device)
 
     # step 3. prepare training tool
     criterion = LabelSmoothing()

@@ -31,7 +31,7 @@ class DANN(nn.Module):
         self.fc = nn.Linear(embed_dim, nclass)
         self.domain_classifier = DomainClassifier(embed_dim, hidden_dim)
 
-    def forward(self, x, alpha):
+    def forward_impl(self, x, alpha):
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
         domain_prediction = self.domain_classifier(feature, alpha)
@@ -41,6 +41,9 @@ class DANN(nn.Module):
         feature = self.feature_extractor(x)
         class_prediction = self.fc(feature)
         return class_prediction
+
+    def forward(self, *args):
+        return self.forward_impl(*args) if self.training else self.predict(*args)
 
 
 def get_dann(backbone, nclass=31, fc_dim=2048, embed_dim=256, hidden_dim=1024):
