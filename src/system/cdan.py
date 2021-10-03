@@ -15,10 +15,10 @@ class CDAN(DANN):
     def compute_dc_loss(self, embed_s, embed_t, y_hat_s, y_hat_t):
         c_embed_s = self.conditional_embed(embed_s, y_hat_s, embed_s.size(0))
         c_embed_t = self.conditional_embed(embed_t, y_hat_t, embed_t.size(0))
-        return super(CDAN, self).compute_dc_loss(c_embed_s, embed_t, y_hat_s, y_hat_t)
+        return super(CDAN, self).compute_dc_loss(c_embed_s, c_embed_t, y_hat_s, y_hat_t)
 
     def conditional_embed(self, embed_s, y_hat_s, batch_size):
-        return F.softmax(y_hat_s, dim=1).detach().unsqueeze(2).mul_(embed_s.unsqueeze(1)).view(batch_size, self.cdan_dim)
+        return (F.softmax(y_hat_s, dim=1).detach().unsqueeze(2) @ embed_s.unsqueeze(1)).view(batch_size, self.cdan_dim)
 
 
 class CDAN_E(CDAN):
@@ -27,7 +27,7 @@ class CDAN_E(CDAN):
         self.criterion_dc = nn.CrossEntropyLoss(reduction='none')
 
     def compute_dc_loss(self, embed_s, embed_t, y_hat_s, y_hat_t):
-        dc_loss = super(CDAN, self).compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
+        dc_loss = super(CDAN_E, self).compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
         return self.conditional_dc_loss(dc_loss, torch.cat([y_hat_s, y_hat_t]))
 
     def conditional_dc_loss(self, dc_loss, y_hat_cls):

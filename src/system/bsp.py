@@ -14,12 +14,12 @@ def BSP(feature_s, feature_t):
 class BSP_DANN(DANN):
     def compute_dc_loss(self, embed_s, embed_t, y_hat_s, y_hat_t):
         bsp_loss = BSP(embed_s, embed_t)
-        dc_loss = super(BSP_CDAN_E, self).compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
-        return bsp_loss + dc_loss
+        dc_loss = super(BSP_DANN, self).compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
+        return bsp_loss * 1e-4 + dc_loss
 
 
 class BSP_CDAN_E(CDAN_E):
     def compute_dc_loss(self, embed_s, embed_t, y_hat_s, y_hat_t):
         bsp_loss = BSP(embed_s, embed_t)
         dc_loss = super(BSP_CDAN_E, self).compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
-        return bsp_loss + dc_loss
+        return bsp_loss * 1e-4 + dc_loss

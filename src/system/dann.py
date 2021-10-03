@@ -8,8 +8,9 @@ from src.system.source_only import DABase
 
 
 class DANN(DABase):
-    def __init__(self, *args, hidden_dim: int = 1024, **kwargs):
+    def __init__(self, *args, hidden_dim: int = 1024, gamma: int = 10, **kwargs):
         super(DANN, self).__init__(*args, **kwargs)
+        self.gamma = gamma
         self.dc = DomainClassifier(kwargs['embed_dim'], hidden_dim)
         self.criterion_dc = nn.CrossEntropyLoss()
 
@@ -29,7 +30,7 @@ class DANN(DABase):
 
     def compute_dc_loss(self, embed_s, embed_t, y_hat_s, y_hat_t):
         y_hat_dc = self.dc(torch.cat([embed_s, embed_t]), self.get_alpha())
-        y_dc = torch.cat(torch.zeros_like(y_hat_s[:, 0]), torch.ones_like(y_hat_t[:, 0]))
+        y_dc = torch.cat([torch.zeros_like(y_hat_s[:, 0]), torch.ones_like(y_hat_t[:, 0])]).long()
         loss_dc = self.criterion_dc(y_hat_dc, y_dc)
         return loss_dc
 
