@@ -1,20 +1,58 @@
-session_name: da_dann
+session_name: da_source_only
 windows:
   - window_name: amazon
+    shell_command_before:
+      - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py -g 5 -m dann -s amazon -t dslr -e 50 -l 3e-3 -i 3
-        - python3 main.py -g 5 -m dann -s amazon -t webcam -e 50 -l 3e-3 -i 3
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py test --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-18'
+        - python3 main.py test --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-19'
+        - python3 main.py test --config=configs/da.yaml -d 'amazon_webcam' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-20'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-21'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-22'
+        - python3 main.py fit --config=configs/da.yaml -d 'amazon_dslr' -g '0,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-23'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-24'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-25'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-26'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-27'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-28'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-29'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-30'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-31'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-32'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-33'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-34'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN' --short_id 'DA-35'
+
   - window_name: dslr
+    shell_command_before:
+      - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py -g 5 -m dann -s dslr -t amazon -e 50 -l 3e-3 -i 3
-        - python3 main.py -g 5 -m dann -s dslr -t webcam -e 50 -l 3e-3 -i 3
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_amazon' -g '1,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'dslr_webcam' -g '1,' --model.class_path 'src.system.dann.DANN'
+
+
   - window_name: webcam
+    shell_command_before:
+      - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py -g 5 -m dann -s webcam -t amazon -e 50 -l 3e-3 -i 3
-        - python3 main.py -g 5 -m dann -s webcam -t dslr -e 50 -l 3e-3 -i 3
-  - window_name: tensorboard
-    panes:
-      - tensorboard --logdir=log/tensor_board
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_amazon' -g '2,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN'
+        - python3 main.py fit --config=configs/da.yaml -d 'webcam_dslr' -g '2,' --model.class_path 'src.system.dann.DANN'
+
+
