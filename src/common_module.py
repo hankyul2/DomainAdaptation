@@ -1,9 +1,7 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 from torch.autograd import Function
-
-from src.loss.im import entropy
+from torch.nn import functional as F
 
 
 class GRL(Function):
@@ -39,13 +37,24 @@ class DomainClassifier(nn.Module):
         return x
 
 
-def conditional_entropy(pred_dom, y_dom, pred_cls, alpha):
-    # Todo: improve E performance
-    pre_cls_softmax = F.softmax(pred_cls, dim=-1)
-    e = GRL.apply(entropy(pre_cls_softmax), alpha)
-    w = 1 + torch.exp(-e)
-    loss = F.cross_entropy(pred_dom, y_dom, reduction='none')
-    conditional_loss = ((w/w.sum(dim=0).detach().item()) * loss).sum(dim=0)
-    return conditional_loss
+def entropy(prediction_softmax, eps=1e-5):
+    return -(prediction_softmax * torch.log(prediction_softmax+eps)).sum(dim=1)
 
 
+def divergence(prediction_softmax, eps=1e-5):
+    p = prediction_softmax.mean(dim=0)
+    return (p * torch.log(p)).sum()
+
+
+class LabelSmoothing(nn.Module):
+    def __init__(self, alpha=0.1):
+        super(LabelSmoothing, self).__init__()
+        self.alpha = alpha
+        self.certainty = 1.0 - alpha
+        self.criterion = nn.KLDivLoss(reduction='batchmean')
+
+    def forward(self, x, y):
+        b, c = x.shape
+        label = torch.full((b, c), self.alpha/(c-1)).to(y.device)
+        label = label.scatter_(1, y.unsqueeze(1), self.certainty)
+        return self.criterion(F.log_softmax(x, dim=-1), label)

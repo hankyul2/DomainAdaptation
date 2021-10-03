@@ -6,12 +6,11 @@ import torch.nn.functional as F
 from src.base_model_wrapper import BaseModelWrapper
 from src.model.basic import get_model
 from src.dataset import get_dataset, convert_to_dataloader
-from src.loss.im import entropy, divergence
-from src.log import get_log_name, Result
+from src.common_module import entropy, divergence, LabelSmoothing
+from src.log import Result
 from src.model.resnet import get_resnet
 
 from src.utils import AverageMeter
-from src.loss.label_smoothing import LabelSmoothing
 
 
 class ModelWrapper(BaseModelWrapper):

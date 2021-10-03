@@ -2,7 +2,7 @@ from torch import nn
 
 from pytorch_lightning.utilities.cli import instantiate_class
 
-from src.loss.label_smoothing import LabelSmoothing
+from src.common_module import LabelSmoothing
 from src.system.base import BaseVisionSystem
 
 

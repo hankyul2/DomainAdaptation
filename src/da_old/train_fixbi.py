@@ -2,10 +2,10 @@ import copy
 
 import torch
 
-from src.train_da.domain_model_wrapper import DomainModelWrapper
+from src.da_old.domain_model_wrapper import DomainModelWrapper
 from src.dataset import get_dataset, convert_to_dataloader
-from src.loss.fixbi import Fixbi
-from src.log import get_log_name, Result
+from src.da_old.fixbi import Fixbi
+from src.log import Result
 from src.model.models import get_model
 
 from torch.optim import SGD
