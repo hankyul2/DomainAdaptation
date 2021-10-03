@@ -34,7 +34,7 @@ data:
 
 # 2. define model (define other backbone)
 model:
-  class_path: src.system.source_only.DABase
+  class_path: src.system.bsp.BSP_CDAN_E
   init_args:
     backbone_init:
       model_name: "resnet50"
