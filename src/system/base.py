@@ -28,7 +28,7 @@ class BaseVisionSystem(pl.LightningModule):
         super(BaseVisionSystem, self).__init__()
 
         # step 1. save data related info (not defined here)
-        self.num_step = num_step // len(gpus.split(','))
+        self.num_step = num_step // (len(gpus.split(',')) - 1)
         self.max_epochs = max_epochs
 
         # step 2. define model
