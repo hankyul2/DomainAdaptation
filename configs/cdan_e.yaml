@@ -15,7 +15,7 @@ shortcut:
     - 224
   batch_size: 32
   num_workers: 4
-  lr: 0.01
+  lr: 0.003
 
 # 1. load data
 data:

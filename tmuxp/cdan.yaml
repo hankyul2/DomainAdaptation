@@ -5,24 +5,24 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '0,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '2,'
 
   - window_name: dslr
     shell_command_before:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '4,'
 
 
   - window_name: webcam
@@ -30,11 +30,11 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '2,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '2,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '2,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '2,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '2,'
-        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '2,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '4,'
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '4,'
 
 

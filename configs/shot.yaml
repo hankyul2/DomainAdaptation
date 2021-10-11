@@ -13,9 +13,9 @@ shortcut:
     - 256
     - 224
     - 224
-  batch_size: 32
+  batch_size: 64
   num_workers: 4
-  lr: 0.003
+  lr: 0.01
 
 # 1. load data
 data:
@@ -34,11 +34,12 @@ data:
 
 # 2. define model (define other backbone)
 model:
-  class_path: src.system.cdan.CDAN
+  class_path: src.system.shot.SHOT
   init_args:
     backbone_init:
       model_name: "resnet50"
       pretrained: true
+    source_only_path: 'pretrained/source_only'
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:

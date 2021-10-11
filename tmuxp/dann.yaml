@@ -5,12 +5,12 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '1,'
 
   - window_name: dslr
     shell_command_before:

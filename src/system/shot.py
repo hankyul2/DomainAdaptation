@@ -35,17 +35,17 @@ class SHOT(DABase):
                 p.append(F.softmax(classifier(embed[-1]), dim=1))
             embed, p = torch.cat(embed, dim=0), torch.cat(p, dim=0)
 
-            pseudo_label, centroid = self.cluster(embed, p.t())
+            pseudo_label = self.cluster(embed, p.t())
             weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
-            pseudo_label, centroid = self.cluster(embed, weight.to(self.device))
+            pseudo_label = self.cluster(embed, weight.to(self.device))
             tgt_train.samples = [(tgt_train.samples[i][0], pseudo_label[i].item()) for i in range(len(tgt_train))]
 
         model.train()
         classifier.train()
 
     def cluster(self, embed, weight):
-        centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
-        return (F.normalize(embed) @ F.normalize(self.centroid).t()).max(dim=1)[1], centroid
+        self.centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
+        return (F.normalize(embed) @ F.normalize(self.centroid).t()).max(dim=1)[1]
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         src, tgt = batch
