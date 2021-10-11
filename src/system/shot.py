@@ -16,7 +16,7 @@ class SHOT(DABase):
 
     def on_fit_start(self) -> None:
         weight_path = os.path.join(self.source_only_path, self.trainer.datamodule.src+'.ckpt')
-        self.load_state_dict(torch.load(weight_path)['state_dict'])
+        self.load_state_dict(torch.load(weight_path, map_location='cpu')['state_dict'])
 
     def on_train_epoch_start(self) -> None:
         self.make_pseudo_label(nn.Sequential(self.backbone, self.bottleneck), self.fc)
@@ -25,12 +25,8 @@ class SHOT(DABase):
         model.eval()
         classifier.eval()
         with torch.no_grad():
-            tgt_train = self.trainer.datamodule.train_dataloader()[1].dataset
-            tgt_test = self.trainer.datamodule.test_dataloader()
-            embed = []
-            p = []
-
-            for x, _ in tgt_test:
+            embed, p = [], []
+            for x, _ in self.trainer.datamodule.test_dataloader():
                 embed.append(model(x.to(self.device)))
                 p.append(F.softmax(classifier(embed[-1]), dim=1))
             embed, p = torch.cat(embed, dim=0), torch.cat(p, dim=0)
@@ -38,6 +34,8 @@ class SHOT(DABase):
             pseudo_label = self.cluster(embed, p.t())
             weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
             pseudo_label = self.cluster(embed, weight.to(self.device))
+
+            tgt_train = self.trainer.datamodule.train_dataloader()[1].dataset
             tgt_train.samples = [(tgt_train.samples[i][0], pseudo_label[i].item()) for i in range(len(tgt_train))]
 
         model.train()
