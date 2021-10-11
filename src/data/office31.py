@@ -9,8 +9,14 @@ from torchvision.datasets import ImageFolder
 from src.data.download_dataset import download_office_31
 
 
+class ImageFolderIdx(ImageFolder):
+    def __getitem__(self, item):
+        img, label = super(ImageFolderIdx, self).__getitem__(item)
+        return img, label, item
+
+
 class OFFICE31(LightningDataModule):
-    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int, valid_ratio: float):
+    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int, valid_ratio: float, return_idx: bool = False):
         super(OFFICE31, self).__init__()
 
         src, tgt = dataset_name.split('_')
@@ -21,7 +27,8 @@ class OFFICE31(LightningDataModule):
         self.tgt = tgt
         self.src_root = f'{data_root}/office_31/{src}/images'
         self.tgt_root = f'{data_root}/office_31/{tgt}/images'
-        self.dataset = ImageFolder
+        self.train_dataset = ImageFolder if not return_idx else ImageFolderIdx
+        self.test_dataset = ImageFolder
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.valid_ratio = valid_ratio
@@ -34,8 +41,8 @@ class OFFICE31(LightningDataModule):
     def prepare_data(self) -> None:
         Path("data").mkdir(exist_ok=True)
         download_office_31()
-        src_ds = self.dataset(root=self.src_root)
-        tgt_ds = self.dataset(root=self.tgt_root)
+        src_ds = self.train_dataset(root=self.src_root)
+        tgt_ds = self.train_dataset(root=self.tgt_root)
 
         self.num_classes = len(src_ds.classes)
         self.num_step = max(int(len(src_ds) * (1 - self.valid_ratio)), len(tgt_ds)) // self.batch_size
@@ -50,10 +57,10 @@ class OFFICE31(LightningDataModule):
         print('-' * 50)
 
     def setup(self, stage: str = None):
-        src = self.dataset(self.src_root, self.train_transform)
+        src = self.train_dataset(self.src_root, self.train_transform)
         self.train_src_ds, self.valid_ds = self.split_train_valid(src)
-        self.train_tgt_ds = self.dataset(self.tgt_root, self.train_transform)
-        self.test_ds = self.dataset(self.tgt_root, transform=self.test_transform)
+        self.train_tgt_ds = self.train_dataset(self.tgt_root, self.train_transform)
+        self.test_ds = self.test_dataset(self.tgt_root, transform=self.test_transform)
 
     def split_train_valid(self, ds):
         ds_len = len(ds)

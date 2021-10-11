@@ -42,8 +42,9 @@ class SHOT(DABase):
         classifier.train()
 
     def cluster(self, embed, weight):
-        self.centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
-        return (F.normalize(embed) @ F.normalize(self.centroid).t()).max(dim=1)[1]
+        centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
+        self.pseudo_logit = F.normalize(embed) @ F.normalize(centroid).t()
+        return self.pseudo_logit.max(dim=1)[1]
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         src, tgt = batch
