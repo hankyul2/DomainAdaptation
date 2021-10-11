@@ -1,6 +1,7 @@
 import os
 
 import torch
+from torch import nn
 import torch.nn.functional as F
 from pytorch_lightning.utilities.cli import instantiate_class
 
@@ -18,33 +19,33 @@ class SHOT(DABase):
         self.load_state_dict(torch.load(weight_path)['state_dict'])
 
     def on_train_epoch_start(self) -> None:
-        self.backbone.eval()
-        self.bottleneck.eval()
-        self.fc.eval()
+        self.make_pseudo_label(nn.Sequential(self.backbone, self.bottleneck), self.fc)
 
+    def make_pseudo_label(self, model, classifier):
+        model.eval()
+        classifier.eval()
         with torch.no_grad():
+            tgt_train = self.trainer.datamodule.train_dataloader()[1].dataset
+            tgt_test = self.trainer.datamodule.test_dataloader()
             embed = []
             p = []
-            train_tgt = self.trainer.datamodule.train_dataloader()[1].dataset
-            test_tgt = self.trainer.datamodule.test_dataloader()
-            for x, _ in test_tgt:
-                embed.append(self.bottleneck(self.backbone(x.to(self.device))))
-                p.append(F.softmax(self.fc(embed[-1]), dim=1))
+
+            for x, _ in tgt_test:
+                embed.append(model(x.to(self.device)))
+                p.append(F.softmax(classifier(embed[-1]), dim=1))
             embed, p = torch.cat(embed, dim=0), torch.cat(p, dim=0)
 
-            pseudo_label = self.cluster(embed, p.t())
+            pseudo_label, centroid = self.cluster(embed, p.t())
             weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
-            pseudo_label = self.cluster(embed, weight.to(self.device))
+            pseudo_label, centroid = self.cluster(embed, weight.to(self.device))
+            tgt_train.samples = [(tgt_train.samples[i][0], pseudo_label[i].item()) for i in range(len(tgt_train))]
 
-            train_tgt.samples = [(train_tgt.samples[i][0], pseudo_label[i].item()) for i in range(len(train_tgt))]
-
-        self.backbone.train()
-        self.bottleneck.train()
-        self.fc.train()
+        model.train()
+        classifier.train()
 
     def cluster(self, embed, weight):
         centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
-        return (F.normalize(embed) @ F.normalize(centroid).t()).max(dim=1)[1]
+        return (F.normalize(embed) @ F.normalize(self.centroid).t()).max(dim=1)[1], centroid
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         src, tgt = batch
