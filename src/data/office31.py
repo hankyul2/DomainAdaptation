@@ -50,13 +50,10 @@ class OFFICE31(LightningDataModule):
         print('-' * 50)
 
     def setup(self, stage: str = None):
-        if stage in (None, 'fit'):
-            src = self.dataset(self.src_root, self.train_transform)
-            self.train_src_ds, self.valid_ds = self.split_train_valid(src)
-            self.train_tgt_ds = self.dataset(self.tgt_root, self.train_transform)
-
-        elif stage in (None, 'test', 'predict'):
-            self.test_ds = self.dataset(self.tgt_root, transform=self.test_transform)
+        src = self.dataset(self.src_root, self.train_transform)
+        self.train_src_ds, self.valid_ds = self.split_train_valid(src)
+        self.train_tgt_ds = self.dataset(self.tgt_root, self.train_transform)
+        self.test_ds = self.dataset(self.tgt_root, transform=self.test_transform)
 
     def split_train_valid(self, ds):
         ds_len = len(ds)

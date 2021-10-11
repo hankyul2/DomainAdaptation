@@ -43,7 +43,7 @@ def entropy(prediction_softmax, eps=1e-5):
 
 def divergence(prediction_softmax, eps=1e-5):
     p = prediction_softmax.mean(dim=0)
-    return (p * torch.log(p)).sum()
+    return (p * torch.log(p + eps)).sum()
 
 
 class LabelSmoothing(nn.Module):

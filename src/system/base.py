@@ -30,6 +30,7 @@ class BaseVisionSystem(pl.LightningModule):
         # step 1. save data related info (not defined here)
         self.num_step = num_step // (len(gpus.split(',')) - 1)
         self.max_epochs = max_epochs
+        self.num_classes = num_classes
 
         # step 2. define model
         self.backbone = get_model(**backbone_init)
