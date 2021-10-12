@@ -19,7 +19,7 @@ shortcut:
 
 # 1. load data
 data:
-  class_path: src.data.office31.OFFICE31
+  class_path: src.data.office31.DomainAdaptation
   init_args:
     dataset_name: "amazon_webcam"
     batch_size: 64

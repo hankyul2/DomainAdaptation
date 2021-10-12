@@ -7,7 +7,7 @@ shortcut:
   max_epochs: 100
   model_name: 'resnet50'
   dropout: 0.1
-  dataset_name: 'amazon_webcam'
+  dataset_name: 'amazon'
   size:
     - 256
     - 256
@@ -19,9 +19,9 @@ shortcut:
 
 # 1. load data
 data:
-  class_path: src.data.office31.OFFICE31
+  class_path: src.data.office31.SourceOnly
   init_args:
-    dataset_name: "amazon_webcam"
+    dataset_name: "amazon"
     batch_size: 64
     num_workers: 4
     size:
