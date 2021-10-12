@@ -21,8 +21,7 @@ class DABase(BaseVisionSystem):
         return self.fc(self.backbone(self.backbone(x)))
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
-        src, tgt = batch
-        return self.shared_step(src, self.train_metric, 'train', add_dataloader_idx=False)
+        return self.shared_step(batch, self.train_metric, 'train', add_dataloader_idx=False)
 
     def compute_loss(self, x, y):
         return self.compute_loss_eval(x, y)
