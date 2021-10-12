@@ -5,24 +5,18 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '2,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '2,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '2,' -m r50_vit_base_patch16_224
 
   - window_name: dslr
     shell_command_before:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '1,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '1,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '1,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '1,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '1,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '1,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '4,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '4,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '4,' -m r50_vit_base_patch16_224
 
 
   - window_name: webcam
@@ -30,11 +24,8 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '2,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '2,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '2,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '2,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '2,' -m r50_vit_base_patch16_224
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '2,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '5,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '5,' -m r50_vit_base_patch16_224
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '5,' -m r50_vit_base_patch16_224
 
 

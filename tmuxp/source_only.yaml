@@ -5,36 +5,21 @@ windows:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_webcam' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon_dslr' -g '0,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'amazon' -g '1,'
 
-  - window_name: dslr
+  - window_name: dslr & webcam
     shell_command_before:
       - source ~/.bashrc
     panes:
       - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr_webcam' -g '0,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'dslr' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '1,'
+        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam' -g '1,'
 
-
-  - window_name: webcam
-    shell_command_before:
-      - source ~/.bashrc
-    panes:
-      - shell_command:
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_amazon' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '0,'
-        - python3 main.py fit --config=configs/source_only.yaml -d 'webcam_dslr' -g '0,'
 
 
