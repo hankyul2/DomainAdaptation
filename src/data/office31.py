@@ -165,9 +165,9 @@ class DomainAdaptation(LightningDataModule):
 
 
 class SourceFreeDomainAdaptation(DomainAdaptation):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, return_idx: bool = False, **kwargs):
         super(SourceFreeDomainAdaptation, self).__init__(*args, **kwargs)
-        self.train_dataset = ImageFolderIdx
+        self.train_dataset = ImageFolderIdx if return_idx else ImageFolder
 
     def prepare_data(self) -> None:
         Path("data").mkdir(exist_ok=True)

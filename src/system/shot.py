@@ -46,19 +46,11 @@ class SHOT(DABase):
         self.pseudo_logit = F.normalize(embed) @ F.normalize(centroid).t()
         return self.pseudo_logit.max(dim=1)[1]
 
-    def training_step(self, batch, batch_idx, optimizer_idx=None):
-        src, tgt = batch
-        return self.shared_step(tgt, self.train_metric, 'train', add_dataloader_idx=False)
-
     def compute_loss(self, x, y):
         cls_loss, y_hat = self.compute_loss_eval(x, y)
         p = F.softmax(y_hat, dim=1)
         im_loss = entropy(p).mean() + divergence(p)
         return cls_loss * 0.3 + im_loss * 1.0, y_hat
-
-    def validation_step(self, batch, batch_idx, dataloader_idx=None):
-        self.log_dict({'valid/loss': 1/(self.global_step+1)}, add_dataloader_idx=True)
-        return torch.tensor(1/(self.global_step+1), device=batch[0].device)
 
     def configure_optimizers(self):
         self.fc.requires_grad_(False)
