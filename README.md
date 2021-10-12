@@ -25,7 +25,7 @@ This repository contains pytorch version source code introduced by domain adapta
 
    *pass*
 
-   
+
 
 ### Closed world Benchmark Result
 
@@ -46,18 +46,18 @@ This repository contains pytorch version source code introduced by domain adapta
 
 *In this work*
 
-|                   | A>D  | A>W  | D>A  | D>W  | W>A  | W>D  | Avg  |
-| ----------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| source only       |      |      |      |      |      |      |      |
-| DANN (2016)       |      |      |      |      |      |      |      |
-| CDAN (2018)       |      |      |      |      |      |      |      |
-| CDAN+E (2018)     |      |      |      |      |      |      |      |
-| DANN+BSP (2019)   |      |      |      |      |      |      |      |
-| CDAN+E+BSP (2019) |      |      |      |      |      |      |      |
-| SHOT (2020)       |      |      |      |      |      |      |      |
-| TransDA (2021)    |      |      |      |      |      |      |      |
-| RSDA-MSTN (2020)  |      |      |      |      |      |      |      |
-| FixBi (2021)      |      |      |      |      |      |      |      |
+|                                          | A>D  | A>W  | D>A  | D>W  | W>A  | W>D  | Avg  |
+| ---------------------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| source only                              |      |      |      |      |      |      |      |
+| DANN (2016)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
+| CDAN (2018)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
+| CDAN+E (2018)<br />[tf.dev, summary]     |      |      |      |      |      |      |      |
+| DANN+BSP (2019)<br />[tf.dev, summary]   |      |      |      |      |      |      |      |
+| CDAN+E+BSP (2019)<br />[tf.dev, summary] |      |      |      |      |      |      |      |
+| SHOT (2020)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
+| TransDA (2021)<br />[tf.dev, summary]    |      |      |      |      |      |      |      |
+| RSDA-MSTN (2020)<br />[tf.dev, summary]  |      |      |      |      |      |      |      |
+| FixBi (2021)<br />[tf.dev, summary]      |      |      |      |      |      |      |      |
 
 *Note*
 
@@ -65,6 +65,7 @@ This repository contains pytorch version source code introduced by domain adapta
 2. Backbone models are two types:
    1. *resnet50* pretrained on *ILSVRC2012*
    2. resnet50 + vit_base_patch16_224 (for transDA)
+3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce paper results.
 
 
 
