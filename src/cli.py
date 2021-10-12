@@ -89,8 +89,8 @@ class MyLightningCLI(LightningCLI):
         best_save_dir = os.path.join('pretrained', 'in_this_work', log_name)
         model_checkpoint_callback = ModelCheckpoint(
             dirpath=save_dir, save_last=True,
-            filename='epoch={epoch}_step={other_metric:.2f}_loss={valid/loss:.3f}',
-            monitor='valid/loss', mode='min', auto_insert_metric_name=False
+            filename='epoch={epoch}_acc={valid/top@1:.4f}',
+            monitor='valid/top@1', mode='max', auto_insert_metric_name=False
         )
         lr_callback = LearningRateMonitor()
 
