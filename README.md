@@ -46,18 +46,18 @@ This repository contains pytorch version source code introduced by domain adapta
 
 *In this work*
 
-|                                          | A>D  | A>W  | D>A  | D>W  | W>A  | W>D  | Avg  |
-| ---------------------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| source only                              |      |      |      |      |      |      |      |
-| DANN (2016)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
-| CDAN (2018)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
-| CDAN+E (2018)<br />[tf.dev, summary]     |      |      |      |      |      |      |      |
-| DANN+BSP (2019)<br />[tf.dev, summary]   |      |      |      |      |      |      |      |
-| CDAN+E+BSP (2019)<br />[tf.dev, summary] |      |      |      |      |      |      |      |
-| SHOT (2020)<br />[tf.dev, summary]       |      |      |      |      |      |      |      |
-| TransDA (2021)<br />[tf.dev, summary]    |      |      |      |      |      |      |      |
-| RSDA-MSTN (2020)<br />[tf.dev, summary]  |      |      |      |      |      |      |      |
-| FixBi (2021)<br />[tf.dev, summary]      |      |      |      |      |      |      |      |
+|                                          | A>D      | A>W      | D>A      | D>W      | W>A      | W>D      | Avg  |
+| ---------------------------------------- | -------- | -------- | -------- | -------- | -------- | -------- | ---- |
+| source only                              | 82.0     | 78.4     | **59.0** | 96.6     | 65.7     | 98.9     | 80.1 |
+| DANN (2016)<br />[tf.dev, summary]       | 88.0     | 91.2     | 71.0     | 98.3     | 72.4     | 100      | 86.8 |
+| CDAN (2018)<br />[tf.dev, summary]       | 94.0     | 93.5     | 74.0     | 98.3     | 73.5     | 100      | 88.9 |
+| CDAN+E (2018)<br />[tf.dev, summary]     | 94.4     | 94.0     | 74.1     | 98.7     | 73.3     | 100      | 89.1 |
+| DANN+BSP (2019)<br />[tf.dev, summary]   | **87.3** | **91.3** | **70.8** | 98.2     | 73.2     | 100      | 86.8 |
+| CDAN+E+BSP (2019)<br />[tf.dev, summary] | 94.2     | 94.5     | 74.0     | 98.6     | 73.6     | 100      | 89.1 |
+| SHOT (2020)<br />[tf.dev, summary]       | **91.9** | 91.4     | 74.9     | 98.7     | 74.7     | 100      | 88.6 |
+| TransDA (2021)<br />[tf.dev, summary]    | 97.3     | 96.1     | **70.3** | **97.7** | **66.9** | **99.3** | 87.9 |
+| RSDA-MSTN (2020)<br />[tf.dev, summary]  |          |          |          |          |          |          |      |
+| FixBi (2021)<br />[tf.dev, summary]      |          |          |          |          |          |          |      |
 
 *Note*
 
@@ -65,7 +65,9 @@ This repository contains pytorch version source code introduced by domain adapta
 2. Backbone models are two types:
    1. *resnet50* pretrained on *ILSVRC2012*
    2. resnet50 + vit_base_patch16_224 (for transDA)
-3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce paper results.
+3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce paper results. But, source only model's evaluation is a bit different: `valid=source`, `test=target`
+4. In this works, scores are 3 times averaged scores.
+5. Bold means scores lower than reported.
 
 
 
