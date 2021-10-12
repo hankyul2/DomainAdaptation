@@ -35,7 +35,7 @@ class SHOT(DABase):
             weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
             pseudo_label = self.cluster(embed, weight.to(self.device))
 
-            tgt_train = self.trainer.datamodule.train_dataloader()[1].dataset
+            tgt_train = self.trainer.datamodule.train_dataloader().dataset
             tgt_train.samples = [(tgt_train.samples[i][0], pseudo_label[i].item()) for i in range(len(tgt_train))]
 
         model.train()
