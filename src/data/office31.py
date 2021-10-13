@@ -16,7 +16,8 @@ class ImageFolderIdx(ImageFolder):
 
 
 class SourceOnly(LightningDataModule):
-    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int, valid_ratio: float):
+    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int,
+                 num_workers: int, valid_ratio: float):
         super(SourceOnly, self).__init__()
 
         data_name_list = ['amazon', 'dslr', 'webcam']
@@ -105,7 +106,8 @@ def get_transform(resize, crop, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0
 
 
 class DomainAdaptation(LightningDataModule):
-    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int, valid_ratio: float):
+    def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int,
+                 valid_ratio: float, num_step_mode: str = 'max', drop_last: bool = False):
         super(DomainAdaptation, self).__init__()
 
         src, tgt = dataset_name.split('_')
@@ -120,6 +122,8 @@ class DomainAdaptation(LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.valid_ratio = valid_ratio
+        self.num_step_mode = num_step_mode
+        self.drop_last = drop_last
 
         self.num_step = None
         self.num_classes = None
@@ -133,7 +137,8 @@ class DomainAdaptation(LightningDataModule):
         tgt_ds = self.dataset(root=self.tgt_root)
 
         self.num_classes = len(src_ds.classes)
-        self.num_step = max(len(src_ds), len(tgt_ds)) // self.batch_size
+        ds_len = max(len(src_ds), len(tgt_ds)) if self.num_step_mode == 'max' else min(len(src_ds), len(tgt_ds))
+        self.num_step = ds_len // self.batch_size
 
         print('-' * 50)
         print('Domain Adaptation Dataset')
@@ -150,8 +155,8 @@ class DomainAdaptation(LightningDataModule):
         self.test_tgt_ds = self.dataset(self.tgt_root, transform=self.test_transform)
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
-        src = DataLoader(self.train_src_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        tgt = DataLoader(self.train_tgt_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        src = DataLoader(self.train_src_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, drop_last=self.drop_last)
+        tgt = DataLoader(self.train_tgt_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, drop_last=self.drop_last)
         return [src, tgt]
 
     def val_dataloader(self) -> EVAL_DATALOADERS:

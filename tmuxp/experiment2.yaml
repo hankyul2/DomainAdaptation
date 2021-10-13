@@ -1,0 +1,97 @@
+session_name: da_experiment2
+windows:
+  - window_name: shot (gpu 1)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_dslr' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_dslr' -g '1,'
+        - python3 main.py fit --config=configs/shot.yaml -d 'webcam_dslr' -g '1,'
+
+  - window_name: transda (gpu 2)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_dslr' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_dslr' -g '2,'
+        - python3 main.py fit --config=configs/transDA.yaml -d 'webcam_dslr' -g '2,'
+
+  - window_name: fixbi (gpu 4)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_dslr' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_dslr' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'amazon_dslr' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'dslr_webcam' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_amazon' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_dslr' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_dslr' -g '4,'
+        - python3 main.py fit --config=configs/fixbi.yaml -d 'webcam_dslr' -g '4,'
+
+  - window_name: rsda_mstn (gpu 5)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_dslr' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_dslr' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'amazon_dslr' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'dslr_webcam' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_amazon' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_dslr' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_dslr' -g '5,'
+        - python3 main.py fit --config=configs/rsda_mstn.yaml -d 'webcam_dslr' -g '5,'
