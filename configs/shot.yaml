@@ -4,7 +4,7 @@ short_id: ''
 
 shortcut:
   gpus: '0,'
-  max_epochs: 100
+  max_epochs: 15
   model_name: 'resnet50'
   dropout: 0.1
   dataset_name: 'amazon_webcam'

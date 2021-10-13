@@ -29,7 +29,7 @@ class SHOT(DABase):
             for x, _ in self.trainer.datamodule.test_dataloader():
                 embed.append(model(x.to(self.device)))
                 p.append(F.softmax(classifier(embed[-1]), dim=1))
-            embed, p = torch.cat(embed, dim=0), torch.cat(p, dim=0)
+            embed, p = F.normalize(torch.cat(embed, dim=0)), torch.cat(p, dim=0)
 
             pseudo_label = self.cluster(embed, p.t())
             weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
@@ -42,14 +42,14 @@ class SHOT(DABase):
         classifier.train()
 
     def cluster(self, embed, weight):
-        centroid = weight @ embed / weight.sum(dim=1, keepdim=True)
-        self.pseudo_logit = F.normalize(embed) @ F.normalize(centroid).t()
+        centroid = F.normalize(weight @ embed / (weight.sum(dim=1, keepdim=True)+1e-8))
+        self.pseudo_logit = embed @ centroid.t()
         return self.pseudo_logit.max(dim=1)[1]
 
     def compute_loss(self, x, y):
         cls_loss, y_hat = self.compute_loss_eval(x, y)
         p = F.softmax(y_hat, dim=1)
-        im_loss = entropy(p).mean() + divergence(p)
+        im_loss = entropy(p).mean() - divergence(p)
         return cls_loss * 0.3 + im_loss * 1.0, y_hat
 
     def configure_optimizers(self):
