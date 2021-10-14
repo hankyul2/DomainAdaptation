@@ -19,14 +19,16 @@ def mixup(x, y, ratio):
     return x * ratio + y * (1 - ratio)
 
 
-def fix_mixup_loss(SDM, X_s, X_t, y_s, y_t, ratio=0.7):
-    X_m = mixup(X_s, X_t, ratio)
-    return mixup(F.cross_entropy(SDM(X_m), y_s), F.cross_entropy(SDM(X_m), y_t), ratio)
+def fix_mixup_loss(model, X_s, X_t, y_s, y_t, ratio=0.7):
+    y_m = model(mixup(X_s, X_t, ratio))
+    return mixup(F.cross_entropy(y_m, y_s), F.cross_entropy(y_m, y_t), ratio)
 
 
 def self_penalty_loss(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm, y_t_tdm, sdt, tdt):
-    return F.nll_loss(torch.log(1 - F.softmax(y_hat_sdm[mask_sdm]/sdt, dim=1)), y_t_sdm[mask_sdm]) + \
-            F.nll_loss(torch.log(1 - F.softmax(y_hat_tdm[mask_tdm]/tdt, dim=1)), y_t_tdm[mask_tdm])
+    # Todo: There are problem with self_penalty_loss
+    return 0
+    # return F.nll_loss(torch.log(1 - F.softmax(y_hat_sdm[mask_sdm]/sdt, dim=1)), y_t_sdm[mask_sdm]) + \
+    #         F.nll_loss(torch.log(1 - F.softmax(y_hat_tdm[mask_tdm]/tdt, dim=1)), y_t_tdm[mask_tdm])
 
 
 def bidirectional_loss(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm, y_t_tdm):
@@ -34,23 +36,22 @@ def bidirectional_loss(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm, y_t_td
             F.cross_entropy(y_hat_tdm[mask_sdm], y_t_sdm[mask_sdm])
 
 
-def get_label_and_mask(y_hat_sdm, compare_fn=torch.lt):
-    prob, pseudo_label = F.softmax(y_hat_sdm, dim=1).max(dim=1)
+def get_label_and_mask(y_hat, compare_fn=torch.lt):
+    prob, pseudo_label = F.softmax(y_hat, dim=1).max(dim=1)
     threshold = prob.mean() - 2 * prob.std()
     mask = torch.nonzero(compare_fn(prob, threshold), as_tuple=True)[0]
     return pseudo_label, mask, threshold
 
 
-def confidence_loss(y_hat_sdm, y_hat_tdm, loss_fn, compare_fn):
-    y_t_sdm, mask_sdm, threshold_sdm = get_label_and_mask(y_hat_sdm, compare_fn)
-    y_t_tdm, mask_tdm, threshold_tdm = get_label_and_mask(y_hat_tdm, compare_fn)
-    mask_len = min(len(mask_sdm), len(mask_tdm))
+def confidence_loss(y_hat_s, y_hat_t, loss_fn, compare_fn):
+    pseudo_s, mask_s, threshold_s = get_label_and_mask(y_hat_s, compare_fn)
+    pseudo_t, mask_t, threshold_t = get_label_and_mask(y_hat_t, compare_fn)
+    mask_len = min(len(mask_s), len(mask_t))
     if mask_len:
-        mask_sdm, mask_tdm = mask_sdm[:mask_len], mask_tdm[:mask_len]
-        loss_cl = loss_fn(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm.detach(), y_t_tdm.detach())
+        loss_cl = loss_fn(mask_s[:mask_len], mask_t[:mask_len], y_hat_s, y_hat_t, pseudo_s.detach(), pseudo_t.detach())
     else:
         loss_cl = 0
-    return loss_cl, threshold_sdm, threshold_tdm
+    return loss_cl, threshold_s, threshold_t
 
 
 def consistency_loss(SDM, TDM, X_s, X_t, ratio=0.5):
@@ -127,7 +128,7 @@ class FixBi(DABase):
         y_m = y_sd + y_td
         self.log_dict({
             'valid/sd@1': self.sd_acc(y_sd, y), 'valid/td@1': self.td_acc(y_td, y), 'valid/top@1': self.md_acc(y_m, y)
-        })
+        }, prog_bar=True)
 
     def configure_optimizers(self):
         optimizer = instantiate_class(
