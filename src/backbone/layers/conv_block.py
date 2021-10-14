@@ -20,11 +20,12 @@ class BasicBlock(nn.Module):
         self.conv2 = conv3x3(in_channels=out_channels, out_channels=out_channels)
         self.bn1 = norm_layer(out_channels)
         self.bn2 = norm_layer(out_channels)
+        self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample if downsample else nn.Identity()
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        return F.relu(self.downsample(x) + self.bn2(self.conv2(out)))
+        out = self.relu(self.bn1(self.conv1(x)))
+        return self.relu(self.downsample(x) + self.bn2(self.conv2(out)))
 
 
 class PreActBasicBlock(BasicBlock):
@@ -57,12 +58,13 @@ class BottleNeck(nn.Module):
         self.bn1 = norm_layer(width)
         self.bn2 = norm_layer(width)
         self.bn3 = norm_layer(self.out_channels)
+        self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample if downsample else nn.Identity()
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = F.relu(self.bn2(self.conv2(out)))
-        return F.relu(self.downsample(x) + self.bn3(self.conv3(out)))
+        out = self.relu(self.bn1(self.conv1(x)))
+        out = self.relu(self.bn2(self.conv2(out)))
+        return self.relu(self.downsample(x) + self.bn3(self.conv3(out)))
 
 
 class PreActBottleNeck(BottleNeck):
