@@ -28,7 +28,7 @@ class ResNet(nn.Module):
 
         self.conv1 = nn.Conv2d(3, self.in_channels, kernel_size=(7, 7), stride=2, padding=(3, 3), bias=False)
         self.bn1 = self.norm_layer(self.in_channels)
-        self.relu = nn.ReLU(inplace=False)
+        self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=(3, 3), stride=2, padding=1)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.flatten = nn.Flatten()

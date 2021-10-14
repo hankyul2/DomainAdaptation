@@ -10,7 +10,7 @@ from pytorch_lightning.utilities.cli import instantiate_class
 
 import copy
 
-from torchmetrics import Accuracy
+from torchmetrics import Accuracy, MetricCollection
 
 from src.system.source_only import DABase
 
@@ -88,23 +88,24 @@ class FixBiLoss(nn.Module):
         return loss_fm, loss_cl, loss_cr, threshold_sdm, threshold_tdm
 
 
+class MyMetric(MetricCollection):
+    @torch.jit.unused
+    def forward(self, *args, **kwargs):
+        return {k: m(*arg) for arg, (k, m) in zip(args, self.items())}
+
+
 class FixBi(DABase):
     def __init__(self, *args, sd_lambda: float = 0.7, warmup: int = 100, uda_path: str = 'pretrained/dann', **kwargs):
         super(FixBi, self).__init__(*args, **kwargs)
-        self.sd_lambda = sd_lambda
-        self.td_lambda = 1 - sd_lambda
-        self.warmup = warmup
-        self.uda_path = uda_path
-
         c = copy.deepcopy
-        self.sd_model = nn.Sequential(OrderedDict([
-            ('backbone', c(self.backbone)), ('bottleneck', c(self.bottleneck)), ('fc', c(self.fc))])
-        )
-        self.td_model = nn.Sequential(OrderedDict([
-            ('backbone', c(self.backbone)), ('bottleneck', c(self.bottleneck)), ('fc', c(self.fc))])
-        )
-        self.loss_fn = FixBiLoss(0.7, 0.3, 0.5, 5.0, 5.0, 100)
-        self.sd_acc, self.td_acc, self.md_acc = Accuracy(top_k=1), Accuracy(top_k=1), Accuracy(top_k=1)
+        self.uda_path = uda_path
+        self.sd_model = nn.Sequential(OrderedDict([('backbone', c(self.backbone)), ('bottleneck', c(self.bottleneck)), ('fc', c(self.fc))]))
+        self.td_model = nn.Sequential(OrderedDict([('backbone', c(self.backbone)), ('bottleneck', c(self.bottleneck)), ('fc', c(self.fc))]))
+        self.loss_fn = FixBiLoss(sd_lambda, 1-sd_lambda, 0.5, 5.0, 5.0, warmup)
+
+        metric = MyMetric({"sd@1": Accuracy(top_k=1), "td@1": Accuracy(top_k=1), "top@1": Accuracy(top_k=1)})
+        self.valid_metric = metric.clone(prefix='valid/')
+        self.test_metric = metric.clone(prefix='test/')
 
     def on_fit_start(self) -> None:
         weight_path = os.path.join(self.uda_path, self.trainer.datamodule.dataset_name+'.ckpt')
@@ -123,12 +124,16 @@ class FixBi(DABase):
         return loss_fm + loss_cl + loss_cr
 
     def validation_step(self, batch, batch_idx, dataloader_idx=None):
+        self.shared_step(batch, self.valid_metric)
+
+    def test_step(self, batch, batch_idx, dataloader_idx=None):
+        self.shared_step(batch, self.test_metric)
+
+    def shared_step(self, batch, metric):
         x, y = batch
         y_sd, y_td = F.softmax(self.sd_model(x), dim=1), F.softmax(self.td_model(x), dim=1)
         y_m = y_sd + y_td
-        self.log_dict({
-            'valid/sd@1': self.sd_acc(y_sd, y), 'valid/td@1': self.td_acc(y_td, y), 'valid/top@1': self.md_acc(y_m, y)
-        }, prog_bar=True)
+        self.log_dict(metric((y_sd, y), (y_td, y), (y_m, y)), prog_bar=True)
 
     def configure_optimizers(self):
         optimizer = instantiate_class(
