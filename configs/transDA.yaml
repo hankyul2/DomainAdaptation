@@ -13,7 +13,7 @@ shortcut:
     - 256
     - 224
     - 224
-  batch_size: 32
+  batch_size: 59
   num_workers: 4
   lr: 0.01
 
@@ -38,7 +38,7 @@ model:
   class_path: src.system.trans_da.TransDA
   init_args:
     backbone_init:
-      model_name: "resnet50"
+      model_name: "r50_vit_base_patch16_224"
       pretrained: true
     source_only_path: 'pretrained/source_only_vit'
 

@@ -33,7 +33,7 @@ class Embedding(nn.Module):
         self.pad_cls_token = lambda x: torch.cat([repeat(self.cls_token, '1 1 d -> b 1 d', b=x.size(0)), x], dim=1)
         self.pe = nn.Parameter(torch.rand(1, patch_num + 1, d_model))
         self.add_positional_encoding = lambda x: x + self.pe[:, :x.size(1)]
-        self.dropout = nn.Dropout(p=dropout)
+        self.dropout = nn.Dropout(p=dropout, inplace=True)
 
     def forward(self, x):
         x = self.linear_projection(x)
@@ -67,7 +67,7 @@ class FeedForward(nn.Module):
         super(FeedForward, self).__init__()
         self.w1 = nn.Linear(d_model, d_ff)
         self.w2 = nn.Linear(d_ff, d_model)
-        self.dropout = nn.Dropout(p=dropout)
+        self.dropout = nn.Dropout(p=dropout, inplace=True)
 
     def forward(self, x):
         return self.w2(self.dropout(F.gelu(self.w1(x))))
@@ -89,7 +89,7 @@ class SublayerConnection(nn.Module):
     def __init__(self, d_model, dropout=0.1):
         super(SublayerConnection, self).__init__()
         self.norm = LayerNorm(d_model)
-        self.dropout = nn.Dropout(p=dropout)
+        self.dropout = nn.Dropout(p=dropout, inplace=True)
 
     def forward(self, x, layer):
         return x + self.dropout(layer(self.norm(x)))

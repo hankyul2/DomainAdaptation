@@ -12,6 +12,8 @@ class TransDA(SHOT):
         super(TransDA, self).on_fit_start()
         self.backbone_t = copy.deepcopy(self.backbone)
         self.bottleneck_t = copy.deepcopy(self.bottleneck)
+        self.backbone_t.requires_grad_(False)
+        self.bottleneck_t.requires_grad_(False)
 
     def on_train_epoch_start(self) -> None:
         self.make_pseudo_label(nn.Sequential(self.backbone_t, self.bottleneck_t), self.fc)
@@ -25,7 +27,7 @@ class TransDA(SHOT):
 
     def compute_loss(self, x, y, z):
         cls_im_loss, y_hat = super(TransDA, self).compute_loss(x, y)
-        kd_loss = (-F.log_softmax(y_hat, dim=1) * F.softmax(self.pseudo_logit[z].detach(), dim=1)).mean()
+        kd_loss = (-F.log_softmax(y_hat, dim=1) * F.softmax(self.pseudo_logit[z], dim=1)).mean()
         return cls_im_loss + kd_loss, y_hat
 
     def on_train_batch_end(self, outputs, batch, batch_idx, unused=0):
