@@ -1,0 +1,49 @@
+session_name: da_experiment3
+windows:
+  - window_name: mstn (gpu 1)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'amazon_dslr' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'dslr_webcam' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_amazon' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_dslr' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_dslr' -g '1,'
+        - python3 main.py fit --config=configs/mstn.yaml -d 'webcam_dslr' -g '1,'
+
+  - window_name: dsbn_mstn (gpu 2)
+    shell_command_before:
+      - source ~/.bashrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'amazon_dslr' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'dslr_webcam' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_amazon' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_dslr' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_dslr' -g '2,'
+        - python3 main.py fit --config=configs/dsbn_mstn.yaml -d 'webcam_dslr' -g '2,'
