@@ -3,12 +3,14 @@
 This repository contains pytorch version source code introduced by domain adaptation paper:
 
 1. DANN (2016)
-2. CDAN (2018)
-3. BSP (2019)
-4. SHOT (2020)
-5. RSDA-MSTN (2020)
-6. TransDA (2021)
-7. FixBi (2021)
+2. MSTN (2018)
+3. CDAN (2018)
+4. BSP (2019)
+5. DSBN (2019)
+6. SHOT (2020)
+7. RSDA-MSTN (2020)
+8. TransDA (2021)
+9. FixBi (2021)
 
 
 
@@ -35,8 +37,10 @@ This repository contains pytorch version source code introduced by domain adapta
 | ----------------- | -------- | -------- | -------- | -------- | -------- | --------- | -------- |
 | source only       | 80.8     | 76.9     | 60.3     | 95.3     | 63.6     | 98.7      | 79.3     |
 | DANN (2016)       | 79.7     | 82.0     | 68.2     | 96.9     | 67.4     | 99.1      | 82.2     |
+| MSTN (2018)       | 90.4     | 91.3     | 72.7     | 98.9     | 65.6     | 100.0     | 86.5     |
 | CDAN (2018)       | 89.8     | 93.1     | 70.1     | 98.2     | 68.0     | 100.0     | 86.6     |
 | CDAN+E (2018)     | 92.9     | 94.1     | 71.0     | 98.6     | 69.3     | 100.0     | 87.7     |
+| DSBN+MSTN (2019)  | 90.8     | 93.3     | 72.7     | 99.1     | 73.9     | 100.0     | 88.3     |
 | DANN+BSP (2019)   | 90.0     | 93.0     | 71.9     | 98.0     | 73.0     | 100.0     | 87.7     |
 | CDAN+E+BSP (2019) | 93.0     | 93.3     | 73.6     | 98.2     | 72.6     | 100.0     | 88.5     |
 | SHOT (2020)       | 94.0     | 90.1     | 74.7     | 98.4     | 74.3     | 99.9      | 88.6     |
@@ -46,18 +50,20 @@ This repository contains pytorch version source code introduced by domain adapta
 
 *In this work*
 
-|                                          | A>D      | A>W      | D>A      | D>W      | W>A      | W>D      | Avg  |
-| ---------------------------------------- | -------- | -------- | -------- | -------- | -------- | -------- | ---- |
-| source only                              | 82.0     | 78.4     | **59.0** | 96.6     | 65.7     | 98.9     | 80.1 |
-| DANN (2016)<br />[tf.dev, summary]       | 88.0     | 91.2     | 71.0     | 98.3     | 72.4     | 100      | 86.8 |
-| CDAN (2018)<br />[tf.dev, summary]       | 94.0     | 93.5     | 74.0     | 98.3     | 73.5     | 100      | 88.9 |
-| CDAN+E (2018)<br />[tf.dev, summary]     | 94.4     | 94.0     | 74.1     | 98.7     | 73.3     | 100      | 89.1 |
-| DANN+BSP (2019)<br />[tf.dev, summary]   | **87.3** | **91.3** | **70.8** | 98.2     | 73.2     | 100      | 86.8 |
-| CDAN+E+BSP (2019)<br />[tf.dev, summary] | 94.2     | 94.5     | 74.0     | 98.6     | 73.6     | 100      | 89.1 |
-| SHOT (2020)<br />[tf.dev, summary]       | **91.9** | 91.4     | 74.9     | 98.7     | 74.7     | 100      | 88.6 |
-| TransDA (2021)<br />[tf.dev, summary]    | 97.3     | 96.1     | **70.3** | **97.7** | **66.9** | **99.3** | 87.9 |
-| RSDA-MSTN (2020)<br />[tf.dev, summary]  |          |          |          |          |          |          |      |
-| FixBi (2021)<br />[tf.dev, summary]      |          |          |          |          |          |          |      |
+|                                          | A>D      | A>W      | D>A      | D>W      | W>A      | W>D      | Avg      |
+| ---------------------------------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| source only                              | 82.0     | 78.4     | **59.0** | 96.6     | 65.7     | 98.9     | 80.1     |
+| DANN (2016)<br />[tf.dev, summary]       | 88.0     | 91.2     | 71.0     | 98.3     | 72.4     | 100      | 86.8     |
+| MSTN (2018)<br />[tf.dev, summary]       |          |          |          |          |          |          |          |
+| CDAN (2018)<br />[tf.dev, summary]       | 94.0     | 93.5     | 74.0     | 98.3     | 73.5     | 100      | 88.9     |
+| CDAN+E (2018)<br />[tf.dev, summary]     | 94.4     | 94.0     | 74.1     | 98.7     | 73.3     | 100      | 89.1     |
+| DSBN+MSTN (2019)<br />[tf.dev, summary]  |          |          |          |          |          |          |          |
+| DANN+BSP (2019)<br />[tf.dev, summary]   | **87.3** | **91.3** | **70.8** | 98.2     | 73.2     | 100      | 86.8     |
+| CDAN+E+BSP (2019)<br />[tf.dev, summary] | 94.2     | 94.5     | 74.0     | 98.6     | 73.6     | 100      | 89.1     |
+| SHOT (2020)<br />[tf.dev, summary]       | **92.5** | 92.0     | **74.1** | 98.7     | **73.2** | 100      | **88.4** |
+| TransDA (2021)<br />[tf.dev, summary]    | 97.5     | 96.4     | **71.2** | **97.7** | **67.7** | **99.3** | **88.3** |
+| RSDA-MSTN (2020)<br />[tf.dev, summary]  |          |          |          |          |          |          |          |
+| FixBi (2021)<br />[tf.dev, summary]      | **91.0** | **94.1** | **74.1** | **98.4** | **74.3** | **100**  | **88.7** |
 
 *Note*
 
@@ -65,9 +71,10 @@ This repository contains pytorch version source code introduced by domain adapta
 2. Backbone models are two types:
    1. *resnet50* pretrained on *ILSVRC2012*
    2. resnet50 + vit_base_patch16_224 (for transDA)
-3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce paper results. But, source only model's evaluation is a bit different: `valid=source`, `test=target`
+3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce results in paper. But, source only model's evaluation is a bit different: `valid=source`, `test=target`
 4. In this works, scores are 3 times averaged scores.
 5. Bold means scores lower than reported.
+6. Optimizer and learning rate scheduler are same to all model
 
 
 
