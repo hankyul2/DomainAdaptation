@@ -24,10 +24,6 @@ class Centroid(nn.Module):
         self.centroid.data = centroid.data
 
 
-def compute_centroid_loss(src, tgt):
-    return F.mse_loss(src, tgt)
-
-
 class MSTN(DANN):
     def __init__(self, *args, **kwargs):
         super(MSTN, self).__init__(*args, **kwargs)
