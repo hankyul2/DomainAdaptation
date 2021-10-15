@@ -1,6 +1,7 @@
 from torch import nn
 import copy
 import re
+import numpy as np
 
 from src.system.mstn import MSTN
 
@@ -63,7 +64,7 @@ class DSBN_MSTN(MSTN):
     def generate_teacher_model(self):
         self.teacher_model = copy.deepcopy(nn.Sequential(self.backbone, self.bottleneck, self.fc))
         self.teacher_model.requires_grad_(False)
-        self.teacher_model.change_domain('tgt')
+        self.teacher_model[0].change_domain('tgt')
 
     def get_feature(self, x, domain=None):
         self.backbone.change_domain(domain)
@@ -72,3 +73,10 @@ class DSBN_MSTN(MSTN):
     def compute_loss_eval(self, x, y):
         self.backbone.change_domain('tgt')
         return super(DSBN_MSTN, self).compute_loss_eval(x, y)
+
+    def get_alpha(self):
+        max_iter = self.num_step * self.max_epochs / 2
+        if self.current_epoch < 100:
+            return 2. / (1. + np.exp(-self.gamma * self.global_step / max_iter)) - 1
+        else:
+            return 2. / (1. + np.exp(-self.gamma * min(self.global_step - max_iter, 1e-8) / max_iter)) - 1
