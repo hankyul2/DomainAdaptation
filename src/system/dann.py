@@ -14,10 +14,13 @@ class DANN(DABase):
         self.dc = DomainClassifier(kwargs['embed_dim'], hidden_dim)
         self.criterion_dc = nn.CrossEntropyLoss()
 
-    def training_step(self, batch, batch_idx, optimizer_idx=None):
+    def training_step(self, batch, batch_idx, optimizer_idx=None, child_compute_already=None):
         (x_s, y_s), (x_t, y_t) = batch
-        embed_s, y_hat_s = self.get_feature(x_s)
-        embed_t, y_hat_t = self.get_feature(x_t)
+        if child_compute_already:
+            (embed_s, y_hat_s), (embed_t, y_hat_t) = child_compute_already
+        else:
+            embed_s, y_hat_s = self.get_feature(x_s)
+            embed_t, y_hat_t = self.get_feature(x_t)
 
         loss_dc = self.compute_dc_loss(embed_s, embed_t, y_hat_s, y_hat_t)
         loss_cls = self.criterion(y_hat_s, y_s)
