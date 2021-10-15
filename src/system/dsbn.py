@@ -35,6 +35,28 @@ class DSBN_MSTN(MSTN):
     def __init__(self, *args, **kwargs):
         super(DSBN_MSTN, self).__init__(*args, **kwargs)
         apply_dsbn(self.backbone, ['src', 'tgt'])
+        self.teacher_model = None
+
+    def training_step(self, batch, batch_idx, optimizer_idx=None, child_compute_already=None):
+        if self.current_epoch < 100:
+            return super(DSBN_MSTN, self).training_step(batch, batch_idx, optimizer_idx, child_compute_already)
+        else:
+            if not self.teacher_model:
+                self.teacher_model = copy.deepcopy(nn.Sequential(self.backbone, self.bottleneck, self.fc))
+                self.teacher_model.requires_grad_(False)
+                self.teacher_model.change_domain('tgt')
+
+            (x_s, y_s), (x_t, y_t) = batch
+            embed_s, y_hat_s = self.get_feature(x_s, 'src')
+            embed_t, y_hat_t = self.get_feature(x_t, 'tgt')
+            pseudo = (y_hat_t * self.get_alpha() + self.teacher_model(x_t) * (1 - self.get_alpha())).argmax(dim=1)
+            loss = self.criterion(y_hat_s, y_s) + self.criterion(y_hat_t, pseudo)
+
+            metric = self.train_metric(y_hat_s, y_s)
+            self.log_dict({f'train/loss': loss})
+            self.log_dict(metric)
+
+            return loss
         
     def get_feature(self, x, domain=None):
         self.backbone.change_domain(domain)

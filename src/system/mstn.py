@@ -34,7 +34,7 @@ class MSTN(DANN):
         self.src_centroid = Centroid(self.num_classes, kwargs['embed_dim'])
         self.tgt_centroid = Centroid(self.num_classes, kwargs['embed_dim'])
 
-    def training_step(self, batch, batch_idx, optimizer_idx=None, child_method_computed_already=None):
+    def training_step(self, batch, batch_idx, optimizer_idx=None, child_compute_already=None):
         (x_s, y_s), (x_t, y_t) = batch
         embed_s, y_hat_s = self.get_feature(x_s, 'src')
         embed_t, y_hat_t = self.get_feature(x_t, 'tgt')
