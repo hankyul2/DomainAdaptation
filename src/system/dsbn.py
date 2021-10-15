@@ -29,7 +29,11 @@ def apply_dsbn(model, domain_name):
             dsbns.append(module)
     model.dsbns = dsbns
     model.change_domain = lambda domain_name: [dsbn.change_domain(domain_name) for dsbn in dsbns]
-    
+
+
+def get_pseudo_label(student_y_hat, teacher_y_hat, ratio):
+    return (student_y_hat * ratio + teacher_y_hat * (1 - ratio)).argmax(dim=1)
+
 
 class DSBN_MSTN(MSTN):
     def __init__(self, *args, **kwargs):
@@ -42,14 +46,12 @@ class DSBN_MSTN(MSTN):
             return super(DSBN_MSTN, self).training_step(batch, batch_idx, optimizer_idx, child_compute_already)
         else:
             if not self.teacher_model:
-                self.teacher_model = copy.deepcopy(nn.Sequential(self.backbone, self.bottleneck, self.fc))
-                self.teacher_model.requires_grad_(False)
-                self.teacher_model.change_domain('tgt')
+                self.generate_teacher_model()
 
             (x_s, y_s), (x_t, y_t) = batch
             embed_s, y_hat_s = self.get_feature(x_s, 'src')
             embed_t, y_hat_t = self.get_feature(x_t, 'tgt')
-            pseudo = (y_hat_t * self.get_alpha() + self.teacher_model(x_t) * (1 - self.get_alpha())).argmax(dim=1)
+            pseudo = get_pseudo_label(y_hat_t, self.teacher_model(x_t), self.get_alpha())
             loss = self.criterion(y_hat_s, y_s) + self.criterion(y_hat_t, pseudo)
 
             metric = self.train_metric(y_hat_s, y_s)
@@ -57,7 +59,12 @@ class DSBN_MSTN(MSTN):
             self.log_dict(metric)
 
             return loss
-        
+
+    def generate_teacher_model(self):
+        self.teacher_model = copy.deepcopy(nn.Sequential(self.backbone, self.bottleneck, self.fc))
+        self.teacher_model.requires_grad_(False)
+        self.teacher_model.change_domain('tgt')
+
     def get_feature(self, x, domain=None):
         self.backbone.change_domain(domain)
         return super(DSBN_MSTN, self).get_feature(x, domain)
