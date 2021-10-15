@@ -14,8 +14,8 @@ class Centroid(nn.Module):
         self.register_buffer('centroid', torch.zeros(num_classes, embed_dim))
 
     def forward(self, embed, y):
-        weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[y].t().to(y.device)
-        cur_centroid = weight @ embed / weight.sum(dim=1, keep_dim=True)
+        weight = (torch.eye(self.num_classes) @ torch.eye(self.num_classes)[y].t()).to(y.device)
+        cur_centroid = weight @ embed / (weight.sum(dim=1, keepdim=True) + 1e-8)
         centroid = self.factor * cur_centroid + (1 - self.factor) * self.centroid
         self.update_centroid(centroid)
         return centroid
