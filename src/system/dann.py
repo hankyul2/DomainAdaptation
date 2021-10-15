@@ -37,7 +37,7 @@ class DANN(DABase):
         loss_dc = self.criterion_dc(y_hat_dc, y_dc)
         return loss_dc
 
-    def get_feature(self, x):
+    def get_feature(self, x, domain=None):
         feature = self.backbone(x)
         embed = self.bottleneck(feature)
         y_hat = self.fc(embed)

@@ -36,8 +36,8 @@ class MSTN(DANN):
 
     def training_step(self, batch, batch_idx, optimizer_idx=None, child_method_computed_already=None):
         (x_s, y_s), (x_t, y_t) = batch
-        embed_s, y_hat_s = self.get_feature(x_s)
-        embed_t, y_hat_t = self.get_feature(x_t)
+        embed_s, y_hat_s = self.get_feature(x_s, 'src')
+        embed_t, y_hat_t = self.get_feature(x_t, 'tgt')
         loss_centroid = F.mse_loss(self.src_centroid(embed_s, y_s), self.tgt_centroid(embed_t, y_hat_t.argmax(dim=1)))
         loss = super(MSTN, self).training_step(batch, batch_idx, optimizer_idx, ((embed_s, y_hat_s), (embed_t, y_hat_t)))
         return loss + loss_centroid
