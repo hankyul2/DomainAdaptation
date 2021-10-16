@@ -42,12 +42,9 @@ model:
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:
-  class_path: torch.optim.SGD
+  class_path: torch.optim.Adam
   init_args:
-    lr: 0.01
-    momentum: 0.9
-    weight_decay: 0.001
-    nesterov: true
+    lr: 0.0001
 
 lr_scheduler:
   class_path: src.lr_schedulers.PowerLR

@@ -76,3 +76,10 @@ class DSBN_MSTN(MSTN):
 
     def on_fit_end(self) -> None:
         del self.teacher_model
+
+    def get_alpha(self):
+        max_iter = self.num_step * self.max_epochs / 2
+        if self.current_epoch < 100:
+            return 2. / (1. + np.exp(-self.gamma * self.global_step / max_iter)) - 1
+        else:
+            return 2. / (1. + np.exp(-self.gamma * max(self.global_step - max_iter, 1) / max_iter)) - 1
