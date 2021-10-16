@@ -17,8 +17,8 @@ class CDAN(DANN):
         c_embed_t = self.conditional_embed(embed_t, y_hat_t, embed_t.size(0))
         return super(CDAN, self).compute_dc_loss(c_embed_s, c_embed_t, y_hat_s, y_hat_t)
 
-    def conditional_embed(self, embed_s, y_hat_s, batch_size):
-        return (F.softmax(y_hat_s, dim=1).detach().unsqueeze(2) @ embed_s.unsqueeze(1)).view(batch_size, self.cdan_dim)
+    def conditional_embed(self, embed, y_hat, batch_size):
+        return (F.softmax(y_hat, dim=1).detach().unsqueeze(2) @ embed.unsqueeze(1)).view(batch_size, self.cdan_dim)
 
 
 class CDAN_E(CDAN):
@@ -31,8 +31,6 @@ class CDAN_E(CDAN):
         return self.conditional_dc_loss(dc_loss, torch.cat([y_hat_s, y_hat_t]))
 
     def conditional_dc_loss(self, dc_loss, y_hat_cls):
-        # Todo: improve E performance
-        pre_cls_softmax = F.softmax(y_hat_cls, dim=-1)
-        e = GRL.apply(entropy(pre_cls_softmax), self.get_alpha())
+        e = GRL.apply(entropy(F.softmax(y_hat_cls, dim=-1)), self.get_alpha())
         w = 1 + torch.exp(-e)
         return ((w / w.sum(dim=0).detach().item()) * dc_loss).sum(dim=0)
