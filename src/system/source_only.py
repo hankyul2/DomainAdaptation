@@ -11,6 +11,7 @@ class DABase(BaseVisionSystem):
         super(DABase, self).__init__(*args, **kwargs)
         self.bottleneck = nn.Sequential(
             nn.Linear(self.backbone.out_channels, embed_dim),
+            nn.BatchNorm1d(embed_dim),
             nn.Tanh(),
             nn.Dropout(dropout)
         )

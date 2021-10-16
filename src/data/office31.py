@@ -17,7 +17,7 @@ class ImageFolderIdx(ImageFolder):
 
 class SourceOnly(LightningDataModule):
     def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int,
-                 num_workers: int, valid_ratio: float):
+                 num_workers: int, valid_ratio: float, drop_last: bool = False):
         super(SourceOnly, self).__init__()
 
         data_name_list = ['amazon', 'dslr', 'webcam']
@@ -34,6 +34,7 @@ class SourceOnly(LightningDataModule):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.valid_ratio = valid_ratio
+        self.drop_last = drop_last
 
         self.num_step = None
         self.num_classes = None
@@ -72,7 +73,7 @@ class SourceOnly(LightningDataModule):
         return random_split(ds, [train_ds_len, valid_ds_len])
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
-        return DataLoader(self.train_src_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.train_src_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, drop_last=self.drop_last)
 
     def val_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(self.valid_ds, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)

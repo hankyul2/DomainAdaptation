@@ -13,10 +13,11 @@ class SHOT(DABase):
     def __init__(self, *args, source_only_path: str = None, **kwargs):
         super(SHOT, self).__init__(*args, **kwargs)
         self.source_only_path = source_only_path
+        self.register_buffer('eye', torch.eye(self.num_classes))
 
     def on_fit_start(self) -> None:
         weight_path = os.path.join(self.source_only_path, self.trainer.datamodule.src+'.ckpt')
-        self.load_state_dict(torch.load(weight_path, map_location='cpu')['state_dict'])
+        self.load_state_dict(torch.load(weight_path, map_location='cpu')['state_dict'], strict=False)
 
     def on_train_epoch_start(self) -> None:
         self.make_pseudo_label(nn.Sequential(self.backbone, self.bottleneck), self.fc)
@@ -25,15 +26,17 @@ class SHOT(DABase):
         model.eval()
         classifier.eval()
         with torch.no_grad():
-            embed, p = [], []
-            for x, _ in self.trainer.datamodule.test_dataloader():
+            embed, p, ys = [], [], []
+            for x, y in self.trainer.datamodule.test_dataloader():
                 embed.append(model(x.to(self.device)))
                 p.append(F.softmax(classifier(embed[-1]), dim=1))
-            embed, p = F.normalize(torch.cat(embed, dim=0)), torch.cat(p, dim=0)
+                ys.append(y.to(self.device))
+            embed, p, ys = torch.cat(embed, dim=0), torch.cat(p, dim=0), torch.cat(ys, dim=0)
 
             pseudo_label = self.cluster(embed, p.t())
-            weight = torch.eye(self.num_classes) @ torch.eye(self.num_classes)[pseudo_label].t()
-            pseudo_label = self.cluster(embed, weight.to(self.device))
+            pseudo_label = self.cluster(embed, self.eye @ self.eye[pseudo_label].t())
+
+            print('acc: {:5.2f}->{:5.2f}'.format((p.argmax(dim=1) == ys).float().mean()*100, (pseudo_label == ys).float().mean()*100))
 
             tgt_train = self.trainer.datamodule.train_dataloader().dataset
             tgt_train.samples = [(tgt_train.samples[i][0], pseudo_label[i].item()) for i in range(len(tgt_train))]
@@ -42,9 +45,9 @@ class SHOT(DABase):
         classifier.train()
 
     def cluster(self, embed, weight):
-        centroid = F.normalize(weight @ embed / (weight.sum(dim=1, keepdim=True)+1e-8))
-        self.pseudo_logit = embed @ centroid.t()
-        return self.pseudo_logit.max(dim=1)[1]
+        centroid = weight @ F.normalize(embed) / (weight.sum(dim=1, keepdim=True)+1e-8)
+        self.pseudo_logit = 1 - (F.normalize(embed) @ F.normalize(centroid).t())
+        return self.pseudo_logit.argmin(dim=1)
 
     def compute_loss(self, x, y):
         cls_loss, y_hat = self.compute_loss_eval(x, y)
