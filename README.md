@@ -59,7 +59,7 @@ This repository contains pytorch version source code introduced by domain adapta
 | MSTN (2018)<br />[tf.dev, summary]      | **88.6** | 92.1     | **71.6** | **98.4** | 73.4     | 100      | 87.4     |
 | BSP+DANN(2019)<br />[tf.dev, summary]   | **87.3** | **91.3** | **70.8** | 98.2     | 73.2     | 100      | 86.8     |
 | BSP+CDAN+E(2019)<br />[tf.dev, summary] | 94.2     | 94.5     | 74.0     | 98.6     | 73.6     | 100      | 89.1     |
-| DSBN+MSTN (2019)<br />[tf.dev, summary] | 88.4     | 91.9     | 71.8     | -        | -        | -        | -        |
+| DSBN+MSTN (2019)<br />[tf.dev, summary] | 88.4     | 91.9     | 71.8     | 98.8     | -        | 98.5     | -        |
 | RSDA-MSTN (2020)<br />[tf.dev, summary] | -        | -        | -        | -        | -        | -        | -        |
 | SHOT (2020)<br />[tf.dev, summary]      | **92.5** | 92.0     | **74.1** | 98.7     | **73.2** | 100      | **88.4** |
 | TransDA (2021)<br />[tf.dev, summary]   | 97.5     | 96.4     | **71.2** | **97.7** | **67.7** | **99.3** | **88.3** |
@@ -75,7 +75,7 @@ This repository contains pytorch version source code introduced by domain adapta
 4. In this works, scores are 3 times averaged scores.
 5. Bold means scores lower than reported.
 6. Optimizer and learning rate scheduler are same to all model
-7. RSDA-MSTN and other model that have results lower than reported are going to be updated.
+7. RSDA-MSTN and other model that have results lower than reported are going to be updated. (wip)
 
 
 
