@@ -5,10 +5,7 @@ from src.system.dann import DANN
 
 
 def BSP(feature_s, feature_t):
-    _, s_s, _ = torch.svd(feature_s)
-    _, s_t, _ = torch.svd(feature_t)
-    sigma = torch.pow(s_s[0], 2) + torch.pow(s_t[0], 2)
-    return sigma
+    return torch.pow(torch.svd(feature_s)[1][0], 2) + torch.pow(torch.svd(feature_t)[1][0], 2)
 
 
 class BSP_DANN(DANN):

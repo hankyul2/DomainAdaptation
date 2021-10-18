@@ -1,7 +1,8 @@
-from torch import nn
-import copy
 import re
+import copy
 import numpy as np
+
+from torch import nn
 
 from src.system.mstn import MSTN
 

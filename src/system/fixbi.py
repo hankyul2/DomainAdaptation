@@ -1,15 +1,13 @@
 import os
-from collections import OrderedDict
+import copy
 from functools import partial
+from collections import OrderedDict
 
 import torch
 from torch import nn
 import torch.nn.functional as F
 
 from pytorch_lightning.utilities.cli import instantiate_class
-
-import copy
-
 from torchmetrics import Accuracy, MetricCollection
 
 from src.system.source_only import DABase
