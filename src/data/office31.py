@@ -17,7 +17,7 @@ class ImageFolderIdx(ImageFolder):
 
 class SourceOnly(LightningDataModule):
     def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int,
-                 num_workers: int, valid_ratio: float, drop_last: bool = False):
+                 num_workers: int, valid_ratio: float, drop_last: bool = True):
         super(SourceOnly, self).__init__()
 
         data_name_list = ['amazon', 'dslr', 'webcam']
@@ -108,7 +108,7 @@ def get_transform(resize, crop, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0
 
 class DomainAdaptation(LightningDataModule):
     def __init__(self, dataset_name: str, size: tuple, data_root: str, batch_size: int, num_workers: int,
-                 valid_ratio: float, num_step_mode: str = 'max', drop_last: bool = False):
+                 valid_ratio: float, num_step_mode: str = 'max', drop_last: bool = True):
         super(DomainAdaptation, self).__init__()
 
         src, tgt = dataset_name.split('_')
@@ -197,4 +197,4 @@ class SourceFreeDomainAdaptation(DomainAdaptation):
         self.test_tgt_ds = self.dataset(self.tgt_root, transform=self.test_transform)
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
-        return DataLoader(self.train_tgt_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.train_tgt_ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, drop_last=self.drop_last)

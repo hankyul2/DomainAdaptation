@@ -1,3 +1,7 @@
+import os
+
+os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+
 from pytorch_lightning import LightningDataModule
 
 from src.cli import MyLightningCLI
