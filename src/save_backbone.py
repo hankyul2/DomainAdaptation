@@ -3,8 +3,8 @@ from collections import OrderedDict
 import torch
 
 
-ckpt_path = 'log/resnet50_webcam_amazon/DA-87/epoch=54_step=0.00_loss=0.072.ckpt'
-state_dict_path = 'pretrained/da/webcam_amazon_bsp_cdan_e.pth'
+ckpt_path = 'log/resnet50_webcam_dslr/DA-855/epoch=14_acc=0.9980.ckpt'
+state_dict_path = 'pretrained/dann/webcam_dslr.ckpt'
 state_dict = OrderedDict()
 for k, v in torch.load(ckpt_path, map_location='cpu')['state_dict'].items():
     print(k)

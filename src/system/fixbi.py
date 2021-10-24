@@ -107,7 +107,7 @@ class FixBi(DABase):
 
     def on_fit_start(self) -> None:
         weight_path = os.path.join(self.uda_path, self.trainer.datamodule.dataset_name+'.ckpt')
-        weight = torch.load(weight_path, map_location='cpu')['state_dict']
+        weight = torch.load(weight_path, map_location='cpu')
         self.sd_model.load_state_dict(weight, strict=False)
         self.td_model.load_state_dict(weight, strict=False)
 

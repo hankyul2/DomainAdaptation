@@ -17,7 +17,7 @@ class SHOT(DABase):
 
     def on_fit_start(self) -> None:
         weight_path = os.path.join(self.source_only_path, self.trainer.datamodule.src+'.ckpt')
-        self.load_state_dict(torch.load(weight_path, map_location='cpu')['state_dict'], strict=False)
+        self.load_state_dict(torch.load(weight_path, map_location='cpu'), strict=False)
 
     def on_train_epoch_start(self) -> None:
         self.make_pseudo_label(nn.Sequential(self.backbone, self.bottleneck), self.fc)
