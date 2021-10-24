@@ -50,20 +50,20 @@ This repository contains pytorch version source code introduced by domain adapta
 
 *In this work*
 
-|                                         | A>D      | A>W      | D>A      | D>W      | W>A      | W>D      | Avg      |
-| --------------------------------------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-| source only<br />[tf.dev, summary]      | 82.0     | 78.4     | **59.0** | 96.6     | 65.7     | 98.9     | 80.1     |
-| DANN (2015)<br />[tf.dev, summary]      | 88.0     | 91.2     | 71.0     | 98.3     | 72.4     | 100      | 86.8     |
-| CDAN (2017)<br />[tf.dev, summary]      | 94.0     | 93.5     | 74.0     | 98.3     | 73.5     | 100      | 88.9     |
-| CDAN+E (2017)<br />[tf.dev, summary]    | 94.4     | 94.0     | 74.1     | 98.7     | 73.3     | 100      | 89.1     |
-| MSTN (2018)<br />[tf.dev, summary]      | **88.6** | 92.1     | **71.6** | **98.4** | 73.4     | 100      | 87.4     |
-| BSP+DANN(2019)<br />[tf.dev, summary]   | **87.3** | **91.3** | **70.8** | 98.2     | 73.2     | 100      | 86.8     |
-| BSP+CDAN+E(2019)<br />[tf.dev, summary] | 94.2     | 94.5     | 74.0     | 98.6     | 73.6     | 100      | 89.1     |
-| DSBN+MSTN (2019)<br />[tf.dev, summary] | 88.4     | 91.9     | 71.8     | 98.8     | -        | 98.5     | -        |
-| RSDA-MSTN (2020)<br />[tf.dev, summary] | -        | -        | -        | -        | -        | -        | -        |
-| SHOT (2020)<br />[tf.dev, summary]      | **92.5** | 92.0     | **74.1** | 98.7     | **73.2** | 100      | **88.4** |
-| TransDA (2021)<br />[tf.dev, summary]   | 97.5     | 96.4     | **71.2** | **97.7** | **67.7** | **99.3** | **88.3** |
-| FixBi (2021)<br />[tf.dev, summary]     | **91.0** | **94.1** | **74.1** | **98.4** | **74.3** | **100**  | **88.7** |
+|                                         | A>D      | A>W      | D>A      | D>W      | W>A      | W>D       | Avg      |
+| --------------------------------------- | -------- | -------- | -------- | -------- | -------- | --------- | -------- |
+| source only<br />[tf.dev, summary]      | 82.3     | 77.9     | 63.0     | 94.5     | 64.7     | 98.3      | 80.1     |
+| DANN (2015)<br />[tf.dev, summary]      | 87.2     | 90.4     | 70.6     | 97.8     | 73.7     | 99.7      | 86.6     |
+| CDAN (2017)<br />[tf.dev, summary]      | 92.4     | 95.1     | **75.8** | 98.6     | 74.4     | 99.9      | 89.4     |
+| CDAN+E (2017)<br />[tf.dev, summary]    | **93.2** | **95.6** | 75.1     | **98.7** | **75.0** | **100.0** | **89.6** |
+| MSTN (2018)<br />[tf.dev, summary]      | 89.0     | 92.7     | 71.4     | 97.9     | 74.1     | 99.9      | 87.5     |
+| BSP+DANN(2019)<br />[tf.dev, summary]   | 86.3     | 89.1     | 71.4     | 97.7     | 73.4     | **100.0** | 86.3     |
+| BSP+CDAN+E(2019)<br />[tf.dev, summary] | 92.6     | 94.7     | 73.8     | **98.7** | 74.7     | **100.0** | 89.1     |
+| DSBN+MSTN (2019)<br />[tf.dev, summary] |          |          |          |          |          |           |          |
+| RSDA-MSTN (2020)<br />[tf.dev, summary] | -        | -        | -        | -        | -        | -         | -        |
+| SHOT (2020)<br />[tf.dev, summary]      | **92.5** | 92.0     | **74.1** | 98.7     | **73.2** | 100       | **88.4** |
+| TransDA (2021)<br />[tf.dev, summary]   | 97.5     | 96.4     | **71.2** | **97.7** | **67.7** | **99.3**  | **88.3** |
+| FixBi (2021)<br />[tf.dev, summary]     | **91.0** | **94.1** | **74.1** | **98.4** | **74.3** | **100**   | **88.7** |
 
 *Note*
 
@@ -73,9 +73,8 @@ This repository contains pytorch version source code introduced by domain adapta
    2. resnet50 + vit_base_patch16_224 (for transDA)
 3. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce results in paper. But, source only model's evaluation is a bit different: `valid=source`, `test=target`
 4. In this works, scores are 3 times averaged scores.
-5. Bold means scores lower than reported.
-6. Optimizer and learning rate scheduler are same to all model
-7. RSDA-MSTN and other model that have results lower than reported are going to be updated. (wip)
+6. Optimizer and learning rate scheduler are same to all model(SGD) except `mstn`, `dsbn+mstn` (Adam)
+7. Fails to reproduce results: `BSP`
 
 
 
