@@ -13,7 +13,7 @@ shortcut:
     - 256
     - 224
     - 224
-  batch_size: 59
+  batch_size: 54
   num_workers: 4
   lr: 0.01
 

@@ -25,8 +25,8 @@ def fix_mixup_loss(model, X_s, X_t, y_s, y_t, ratio=0.7):
 def self_penalty_loss(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm, y_t_tdm, sdt, tdt):
     # Todo: There are problem with self_penalty_loss
     return 0
-    # return F.nll_loss(torch.log(1 - F.softmax(y_hat_sdm[mask_sdm]/sdt, dim=1)), y_t_sdm[mask_sdm]) + \
-    #         F.nll_loss(torch.log(1 - F.softmax(y_hat_tdm[mask_tdm]/tdt, dim=1)), y_t_tdm[mask_tdm])
+    # return F.nll_loss(torch.log(1 - F.softmax(y_hat_sdm[mask_sdm]/sdt, dim=1) + 1e-8), y_t_sdm[mask_sdm]) + \
+    #         F.nll_loss(torch.log(1 - F.softmax(y_hat_tdm[mask_tdm]/tdt, dim=1) + 1e-8), y_t_tdm[mask_tdm])
 
 
 def bidirectional_loss(mask_sdm, mask_tdm, y_hat_sdm, y_hat_tdm, y_t_sdm, y_t_tdm):
