@@ -1,3 +1,9 @@
+import os
+import copy
+from pathlib import Path
+from collections import OrderedDict
+
+import torch
 from torch import nn
 
 from pytorch_lightning.utilities.cli import instantiate_class
@@ -39,4 +45,13 @@ class DABase(BaseVisionSystem):
         lr_scheduler = {'scheduler': instantiate_class(optimizer, self.update_and_get_lr_scheduler_config()),
                         'interval': 'step'}
         return {'optimizer': optimizer, 'lr_scheduler': lr_scheduler}
+
+    def on_save_checkpoint(self, checkpoint):
+        save_path = os.path.join('pretrained', self.__class__.__name__ + '_' + self.backbone.__class__.__name__, self.trainer.datamodule.dataset_name + '.ckpt')
+        Path(os.path.dirname(save_path)).mkdir(exist_ok=True, parents=True)
+        weight = nn.Sequential(OrderedDict([('backbone', self.backbone), ('bottleneck', self.bottleneck), ('fc', self.fc)])).state_dict()
+        with open(save_path, 'wb') as f:
+            torch.save(weight, f)
+
+
 
