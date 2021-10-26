@@ -39,7 +39,7 @@ model:
     backbone_init:
       model_name: "resnet50"
       pretrained: true
-    source_only_path: 'pretrained/source_only'
+    source_only_path: 'pretrained/DABase_ResNet'
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:

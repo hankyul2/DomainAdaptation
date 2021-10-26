@@ -5,7 +5,7 @@ short_id: ''
 shortcut:
   gpus: '0,'
   max_epochs: 15
-  model_name: 'r50_vit_base_patch16_224'
+  model_name: 'timm'
   dropout: 0.1
   dataset_name: 'amazon_webcam'
   size:
@@ -13,7 +13,7 @@ shortcut:
     - 256
     - 224
     - 224
-  batch_size: 54
+  batch_size: 32
   num_workers: 4
   lr: 0.01
 
@@ -40,7 +40,7 @@ model:
     backbone_init:
       model_name: "r50_vit_base_patch16_224"
       pretrained: true
-    source_only_path: 'pretrained/source_only_vit'
+    source_only_path: 'pretrained/DABase_VisionTransformer'
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:
