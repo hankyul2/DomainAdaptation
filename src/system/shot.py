@@ -16,7 +16,7 @@ class SHOT(DABase):
         self.register_buffer('eye', torch.eye(self.num_classes))
 
     def on_fit_start(self) -> None:
-        weight_path = os.path.join(self.source_only_path, self.trainer.datamodule.src+'.ckpt')
+        weight_path = os.path.join(self.source_only_path, self.trainer.datamodule.src + '.ckpt')
         self.load_state_dict(torch.load(weight_path, map_location='cpu'), strict=False)
 
     def on_train_epoch_start(self) -> None:
@@ -46,8 +46,8 @@ class SHOT(DABase):
 
     def cluster(self, embed, weight):
         centroid = weight @ F.normalize(embed) / (weight.sum(dim=1, keepdim=True)+1e-8)
-        self.pseudo_logit = 1 - (F.normalize(embed) @ F.normalize(centroid).t())
-        return self.pseudo_logit.argmin(dim=1)
+        self.pseudo_logit = F.normalize(embed) @ F.normalize(centroid).t()
+        return self.pseudo_logit.argmax(dim=1)
 
     def compute_loss(self, x, y):
         cls_loss, y_hat = self.compute_loss_eval(x, y)

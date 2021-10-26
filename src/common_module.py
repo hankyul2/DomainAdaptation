@@ -47,11 +47,11 @@ def divergence(prediction_softmax, eps=1e-5):
 
 
 class LabelSmoothing(nn.Module):
-    def __init__(self, alpha=0.1):
+    def __init__(self, alpha=0.1, reduction='batchmean'):
         super(LabelSmoothing, self).__init__()
         self.alpha = alpha
         self.certainty = 1.0 - alpha
-        self.criterion = nn.KLDivLoss(reduction='batchmean')
+        self.criterion = nn.KLDivLoss(reduction=reduction)
 
     def forward(self, x, y):
         b, c = x.shape
