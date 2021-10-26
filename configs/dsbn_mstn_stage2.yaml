@@ -15,7 +15,7 @@ shortcut:
     - 224
   batch_size: 32
   num_workers: 4
-  lr: 0.0001
+  lr: 0.00001
 
 # 1. load data
 data:
@@ -34,11 +34,12 @@ data:
 
 # 2. define model (define other backbone)
 model:
-  class_path: src.system.dsbn.DSBN_MSTN
+  class_path: src.system.dsbn.DSBN_MSTN_Stage2
   init_args:
     backbone_init:
       model_name: "resnet50"
       pretrained: true
+    teacher_model_path: "pretrained/DSBN_MSTN_Stage1_ResNet"
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:
