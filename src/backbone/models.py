@@ -3,6 +3,7 @@ from src.backbone.mobile_net_v2 import get_mobilenet_v2
 from src.backbone.resnet import get_resnet
 from src.backbone.resnet32 import get_resnet32
 from src.backbone.senet import get_seresnet
+from src.backbone.timm import get_timm
 from src.backbone.vit import get_vit
 
 
@@ -19,5 +20,7 @@ def get_model(model_name: str, **kwargs):
         model = get_mobilenet_v2('mobilenet_v2', **kwargs)
     elif model_name.startswith('seresnet'):
         model = get_seresnet(model_name, **kwargs)
+    elif model_name.startswith('timm'):
+        model = get_timm(model_name, **kwargs)
 
     return model

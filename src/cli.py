@@ -67,7 +67,7 @@ class MyLightningCLI(LightningCLI):
             'vit_base_patch16_224', 'vit_base_patch32_224', 'vit_large_patch16_224', 'vit_large_patch32_224',
             'vit_base_patch16_384', 'vit_base_patch32_384', 'vit_large_patch16_384', 'vit_large_patch32_384',
             'r50_vit_base_patch16_224', 'r50_vit_large_patch32_224', 'r50_vit_base_patch16_384',
-            'r50_vit_large_patch32_384',
+            'r50_vit_large_patch32_384', 'timm'
         ]
 
     def instantiate_trainer(self, **kwargs: Any) -> Trainer:
