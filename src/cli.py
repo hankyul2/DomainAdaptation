@@ -88,7 +88,7 @@ class MyLightningCLI(LightningCLI):
         save_dir = os.path.join(log_dir, log_name, neptune_logger.version)
         best_save_dir = os.path.join('pretrained', 'in_this_work', log_name)
         model_checkpoint_callback = ModelCheckpoint(
-            dirpath=save_dir, save_last=True,
+            dirpath=save_dir, save_last=False,
             filename='epoch={epoch}_acc={valid/top@1:.4f}',
             monitor='valid/top@1', mode='max', auto_insert_metric_name=False
         )
