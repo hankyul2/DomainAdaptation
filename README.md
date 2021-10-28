@@ -2,32 +2,34 @@
 
 This repository contains pytorch version source code introduced by domain adaptation paper:
 
-1. DANN (2015)
-2. CDAN (2017)
-3. MSTN (2018)
-4. BSP (2019)
-5. DSBN (2019)
-6. RSDA-MSTN (2020)
-7. SHOT (2020)
-8. TransDA (2021)
-9. FixBi (2021)
+1. DANN (2015) [[paper](http://proceedings.mlr.press/v37/ganin15.html), [repo](https://github.com/fungtion/DANN)] 
+2. CDAN (2017) [[paper](https://arxiv.org/abs/1705.10667), [repo](https://github.com/thuml/CDAN)]
+3. MSTN (2018) [[paper](https://proceedings.mlr.press/v80/xie18c.html), [repo](https://github.com/wgchang/DSBN)]
+4. BSP (2019) [[paper](http://proceedings.mlr.press/v97/chen19i.html), [repo](https://github.com/thuml/Batch-Spectral-Penalization)]
+5. DSBN (2019) [[paper](https://openaccess.thecvf.com/content_CVPR_2019/html/Chang_Domain-Specific_Batch_Normalization_for_Unsupervised_Domain_Adaptation_CVPR_2019_paper.html), [repo](https://github.com/wgchang/DSBN)]
+6. RSDA-MSTN (2020) [[paper](https://openaccess.thecvf.com/content_CVPR_2020/html/Gu_Spherical_Space_Domain_Adaptation_With_Robust_Pseudo-Label_Loss_CVPR_2020_paper.html), [repo](https://github.com/XJTU-XGU/RSDA)]
+7. SHOT (2020) [[paper](http://proceedings.mlr.press/v119/liang20a.html), [repo](https://github.com/tim-learn/SHOT)]
+8. TransDA (2021) [[paper](https://arxiv.org/abs/2105.14138), [repo](https://github.com/ygjwd12345/TransDA)]
+9. FixBi (2021) [[paper](https://openaccess.thecvf.com/content/CVPR2021/html/Na_FixBi_Bridging_Domain_Spaces_for_Unsupervised_Domain_Adaptation_CVPR_2021_paper.html) ,[repo](https://github.com/NaJaeMin92/FixBi)]
 
 
 
-### Tutorial (use standard dataset: Office-31, Office-home, Digits)
+### Tutorial (use standard dataset: Office-31)
 
 1. Clone repository and install dependency
 
    ```bash
    git clone https://github.com/hankyul2/DomainAdaptation.git
-   pip3 install requirements.txt
+   pip3 install -r requirements.txt
    ```
 
-2. Train Model (current version is too difficult to use, wait a moment)
+2. Train Model (If you don't use neptune, just remove it from [here](https://github.com/hankyul2/DomainAdaptation/blob/3af6a9ee3848ef3757c63fcf3f0083757e1a4564/src/cli.py#L82)). Check configuration in [configs](https://github.com/hankyul2/DomainAdaptation/tree/main/configs)
 
-   *pass*
-
-
+   ```bash
+   python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_webcam' -g '0,'
+   ```
+   
+   
 
 ### Closed world Benchmark Result
 
@@ -50,22 +52,23 @@ This repository contains pytorch version source code introduced by domain adapta
 
 *In this work*
 
-|                                            | A>D  | A>W  | D>A      | D>W      | W>A      | W>D       | Avg      |
-| ------------------------------------------ | ---- | ---- | -------- | -------- | -------- | --------- | -------- |
-| source only<br />[tf.dev, summary]         | 82.3 | 77.9 | 63.0     | 94.5     | 64.7     | 98.3      | 80.1     |
-| source only ViT<br />[tf.dev, summary]     | 88.0 | 87.9 | 76.7     | 97.7     | 77.1     | 99.7      | 87.8     |
-| DANN (2015)<br />[tf.dev, summary]         | 87.2 | 90.4 | 70.6     | 97.8     | 73.7     | 99.7      | 86.6     |
-| CDAN (2017)<br />[tf.dev, summary]         | 92.4 | 95.1 | 75.8     | 98.6     | 74.4     | 99.9      | 89.4     |
-| CDAN+E (2017)<br />[tf.dev, summary]       | 93.2 | 95.6 | 75.1     | 98.7     | 75.0     | **100.0** | 89.6     |
-| MSTN (2018)<br />[tf.dev, summary]         | 89.0 | 92.7 | 71.4     | 97.9     | 74.1     | 99.9      | 87.5     |
-| BSP+DANN(2019)<br />[tf.dev, summary]      | 86.3 | 89.1 | 71.4     | 97.7     | 73.4     | **100.0** | 86.3     |
-| BSP+CDAN+E(2019)<br />[tf.dev, summary]    | 92.6 | 94.7 | 73.8     | 98.7     | 74.7     | **100.0** | 89.1     |
-| DSBN+MSTN (2019)<br />[tf.dev, summary]    | 87.3 | 91.9 | 71.0     | 97.8     | 73.4     | 100.0     | 86.9     |
-| RSDA+MSTN (2020)<br />[tf.dev, summary]    | -    | -    | -        | -        | -        | -         | -        |
-| SHOT (2020)<br />[tf.dev, summary]         | 93.2 | 92.5 | 74.3     | 98.2     | 75.9     | **100.0** | 89.0     |
-| SHOT + CDAN+E(2020)<br />[tf.dev, summary] | 93.2 | 95.7 | 77.7     | **98.9** | 76.0     | **100.0** | 90.2     |
-| TransDA (2021)<br />[tf.dev, summary]      | 94.4 | 95.8 | **82.3** | 99.2     | **82.0** | 99.8      | **92.3** |
-| FixBi (2021)<br />[tf.dev, summary]        | 90.8 | 95.7 | 72.6     | 98.7     | 74.8     | **100.0** | 88.8     |
+|                                                              | A>D<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | A>W<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | D>A<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | D>W<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | W>A<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | W>D<br />[[tf.dev](https://tensorboard.dev/experiment/TAqpaeiAQVKoP85cQ9ogSw/#scalars)] | Avg      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
+| source only<br />[[code](src/system/source_only.py), [config](configs/source_only.yaml)] | 82.3                                                         | 77.9                                                         | 63.0                                                         | 94.5                                                         | 64.7                                                         | 98.3                                                         | 80.1     |
+| source only ViT<br />[[code](src/system/source_only.py), [config](configs/source_only.yaml)] | 88.0                                                         | 87.9                                                         | 76.7                                                         | 97.7                                                         | 77.1                                                         | 99.7                                                         | 87.8     |
+| DANN (2015)<br />[[code](src/system/dann.py), [config](configs/dann.yaml)] | 87.2                                                         | 90.4                                                         | 70.6                                                         | 97.8                                                         | 73.7                                                         | 99.7                                                         | 86.6     |
+| CDAN (2017)<br />[[code](src/system/cdan.py), [config](configs/dan.yaml)] | 92.4                                                         | 95.1                                                         | 75.8                                                         | 98.6                                                         | 74.4                                                         | 99.9                                                         | 89.4     |
+| CDAN+E (2017)<br />[[code](src/system/cdan.py), [config](configs/cdan_e.yaml)] | 93.2                                                         | 95.6                                                         | 75.1                                                         | 98.7                                                         | 75.0                                                         | **100.0**                                                    | 89.6     |
+| MSTN (2018)<br />[[code](src/system/mstn.py), [config](configs/mstn.yaml)] | 89.0                                                         | 92.7                                                         | 71.4                                                         | 97.9                                                         | 74.1                                                         | 99.9                                                         | 87.5     |
+| BSP+DANN (2019)<br />[[code](src/system/bsp.py), [config](configs/bsp_dann.yaml)] | 86.3                                                         | 89.1                                                         | 71.4                                                         | 97.7                                                         | 73.4                                                         | **100.0**                                                    | 86.3     |
+| BSP+CDAN+E (2019)<br />[[code](src/system/bsp.py), [config](configs/bsp_cdan_e.yaml)] | 92.6                                                         | 94.7                                                         | 73.8                                                         | 98.7                                                         | 74.7                                                         | **100.0**                                                    | 89.1     |
+| DSBN+MSTN (2019)<br />[[code](src/system/dsbn.py), [config](configs/dsbn_mstn_stage1.yaml)] | 87.3                                                         | 91.9                                                         | 71.0                                                         | 97.8                                                         | 73.4                                                         | 100.0                                                        | 86.9     |
+| RSDA+MSTN (2020)<br />[Not Implemented]                      | -                                                            | -                                                            | -                                                            | -                                                            | -                                                            | -                                                            | -        |
+| SHOT (2020)<br />[[code](src/system/shot.py), [config](configs/shot.yaml)] | 93.2                                                         | 92.5                                                         | 74.3                                                         | 98.2                                                         | 75.9                                                         | **100.0**                                                    | 89.0     |
+| SHOT (CDAN+E) (2020)<br />[[code](src/system/exp.py), [config](configs/exp/shot_cdan.yaml)] | 93.2                                                         | 95.7                                                         | 77.7                                                         | **98.9**                                                     | 76.0                                                         | **100.0**                                                    | 90.2     |
+| MIXUP (CDAN+E) (2021)<br />[[code](src/system/exp.py), [config](configs/exp/pseudo_mixup_ratio_cdan.yaml)] | 92.9                                                         | **96.1**                                                     | 76.2                                                         | 98.9                                                         | 77.7                                                         | **100.0**                                                    | 90.3     |
+| TransDA (2021)<br />[[code](src/system/trans_da.py), [config](configs/transDA.yaml)] | 94.4                                                         | 95.8                                                         | **82.3**                                                     | 99.2                                                         | **82.0**                                                     | 99.8                                                         | **92.3** |
+| FixBi (2021)<br />[[code](src/system/fixbi.py), [config](configs/fixbi.yaml)] | 90.8                                                         | 95.7                                                         | 72.6                                                         | 98.7                                                         | 74.8                                                         | **100.0**                                                    | 88.8     |
 
 *Note*
 
@@ -73,18 +76,16 @@ This repository contains pytorch version source code introduced by domain adapta
 2. Evaluation datasets are:  `valid` = `test` = `target`. For me, this looks weird, but there are no other way to reproduce results in paper. But, source only model's evaluation is a bit different: `valid=source`, `test=target`
 3. In this works, scores are 3 times averaged scores.
 4. Optimizer and learning rate scheduler are same to all model(SGD) except `mstn`, `dsbn+mstn` (Adam)
-5. `SHOT` can results lower accuracy than reported scores. To reproduce reported score use pretrained source only model weights. (download [here]()) I don't know why...
-6. `BSP`, `DSBN+MSTN`, `FixBi`: Fails to reproduce
-7. `SHOT + CDAN+E` means that SHOT is applied after CDAN+E.
+5. `SHOT` can results lower accuracy than reported scores. To reproduce reported score, I recommend you to use provided source only model weights. (download [here]()) I don't know why...
+6. `BSP`, `DSBN+MSTN`, `FixBi`: Fails to reproduce scores reported in paper
+7. `SHOT (CDAN+E)`, `MIXUP (CDAN+E)` is just experimental method, so no tf.dev is provided.
 
 
 
-### References
+### Future Updates
 
-- [fungtion/DANN](https://github.com/fungtion/DANN)
-- [Domain Adversarial Training of Neural Network](https://arxiv.org/abs/1505.07818)
-- [thuml/CDAN](https://github.com/thuml/CDAN)
-- [Conditional Adversarial Domain Adaptation](https://arxiv.org/abs/1705.10667)
+- [ ] Add weight parameter
+- [ ] Add ViT results
+- [ ] Add office-home dataset results
+- [ ] Add digits results
 
-- [thuml/Batch-Spectral-Penalization](https://github.com/thuml/Batch-Spectral-Penalization)
-- [Transferability vs Discriminability: Batch Spectral Penalization for Adversarial Domain Adaptation](http://proceedings.mlr.press/v97/chen19i.html)
