@@ -1,6 +1,6 @@
-# Domain Adaptation
+# Domain Adaptation (Pytorch-Lightning)
 
-This repository contains pytorch version source code introduced by domain adaptation paper:
+This repository contains pytorch (pytorch-lightning) version source code introduced by domain adaptation papers:
 
 1. DANN (2015) [[paper](http://proceedings.mlr.press/v37/ganin15.html), [repo](https://github.com/fungtion/DANN)] 
 2. CDAN (2017) [[paper](https://arxiv.org/abs/1705.10667), [repo](https://github.com/thuml/CDAN)]
@@ -89,3 +89,10 @@ This repository contains pytorch version source code introduced by domain adapta
 - [ ] Add office-home dataset results
 - [ ] Add digits results
 
+
+
+### Some Notations
+
+1. We use `pytorch-lightning` in the code. So if you are unfamiliar with `pytorch-lightning`, I recommend you to read [quick-start of pytorch-lightning](). (quick start is enough to read this code)
+2. To avoid duplication of code, we use class inheritance and just add changes proposed in papers. We try to keep code simple and nice to read. So if you think code is difficult to read, please leave it as issue or PR.
+3. Only 8 papers are now implemented. If there are any request for certain paper, we will try to re-implement it.
