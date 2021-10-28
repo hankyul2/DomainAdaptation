@@ -41,7 +41,7 @@ model:
     backbone_init:
       model_name: "resnet50"
       pretrained: true
-    uda_path: "pretrained/DANN_ResNet"
+    uda_path: "pretrained/MSTN_ResNet"
 
 # 3. prepare train tools (optimizer, learning rate scheduler)
 optimizer:
