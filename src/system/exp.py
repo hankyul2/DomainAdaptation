@@ -49,9 +49,8 @@ class PSEUDO_MIXUP_RATIO_CDAN(DABase):
         mask = torch.nonzero(torch.gt(prob, 0.95), as_tuple=True)[0]
 
         loss_cls = self.criterion(y_hat_s, y_s).mean() + self.criterion(y_hat_t[mask], pred[mask]).mean()
-        loss_mix = (self.criterion(y_hat_r[mask], y_s[mask]).sum(dim=1) * ratio[mask] + self.criterion(y_hat_r[mask],
-                                                                                                       pred[mask]).sum(
-            dim=1) * (1 - ratio[mask])).mean()
+        loss_mix = (self.criterion(y_hat_r[mask], y_s[mask]).sum(dim=1) * ratio[mask] +
+                    self.criterion(y_hat_r[mask],pred[mask]).sum(dim=1) * (1 - ratio[mask])).mean()
         loss_e = self.im_loss(y_hat_s) + self.im_loss(y_hat_t) + self.im_loss(y_hat_r)
         loss = loss_cls + loss_mix + loss_e
 
