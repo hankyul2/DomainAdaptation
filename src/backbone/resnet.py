@@ -18,15 +18,17 @@ class ResNet(nn.Module):
                  channels: list = [64, 128, 256, 512],
                  strides=[1, 2, 2, 2],
                  groups=1,
-                 base_width=64) -> None:
+                 base_width=64,
+                 conv=nn.Conv2d) -> None:
         super(ResNet, self).__init__()
         self.groups = groups
         self.base_width = base_width
         self.norm_layer = norm_layer
         self.in_channels = channels[0]
         self.out_channels = channels[-1] * block.factor
+        self.conv = conv
 
-        self.conv1 = nn.Conv2d(3, self.in_channels, kernel_size=(7, 7), stride=2, padding=(3, 3), bias=False)
+        self.conv1 = self.conv(3, self.in_channels, kernel_size=(7, 7), stride=2, padding=(3, 3), bias=False)
         self.bn1 = self.norm_layer(self.in_channels)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=(3, 3), stride=2, padding=1)
@@ -45,7 +47,7 @@ class ResNet(nn.Module):
         downsample = None
         if self.in_channels != channels * block.factor:
             downsample = nn.Sequential(
-                conv1x1(self.in_channels, channels * block.factor, stride=stride),
+                conv1x1(self.in_channels, channels * block.factor, stride=stride, conv=self.conv),
                 self.norm_layer(channels * block.factor)
             )
         for i in range(nblock):
