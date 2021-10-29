@@ -1,0 +1,75 @@
+session_name: da_experiment5
+windows:
+  - window_name: dann (gpu 0)
+    shell_command_before:
+      - source ~/.zshrc
+    panes:
+      - shell_command:
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'amazon_dslr' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'dslr_webcam' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_amazon' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_dslr' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_dslr' -g '0,' -m timm
+          - python3 main.py fit --config=configs/dann.yaml -d 'webcam_dslr' -g '0,' -m timm
+
+  - window_name: cdan (gpu 1)
+    shell_command_before:
+      - source ~/.zshrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'amazon_dslr' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'dslr_webcam' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_amazon' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '1,' -m timm
+        - python3 main.py fit --config=configs/cdan.yaml -d 'webcam_dslr' -g '1,' -m timm
+
+  - window_name: cdan_e (gpu 2)
+    shell_command_before:
+      - source ~/.zshrc
+    panes:
+      - shell_command:
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_dslr' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_dslr' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'amazon_dslr' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'dslr_webcam' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_amazon' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_dslr' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_dslr' -g '2,' -m timm
+        - python3 main.py fit --config=configs/cdan_e.yaml -d 'webcam_dslr' -g '2,' -m timm
+
+
