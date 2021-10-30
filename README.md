@@ -80,14 +80,27 @@ This repository contains pytorch (pytorch-lightning) version source code introdu
 5. Optimizer and learning rate scheduler are same to all model(SGD) except `mstn`, `dsbn+mstn` (Adam)
 6. `SHOT` can results lower accuracy than reported scores. To reproduce reported score, I recommend you to use provided source only model weights. I don't know why...
 7. `BSP`, `DSBN+MSTN`, `FixBi`: Fails to reproduce scores reported in paper
-8. `SHOT (CDAN+E)`, `MIXUP (CDAN+E)` is just experimental method, so no tf.dev is provided.
+
+
+
+### Experiment
+
+Combination of several methods or models. (No weights and tf.dev)
+
+|                                                              | A>D  | A>W      | D>A  | D>W  | W>A  | W>D       | Avg  |
+| ------------------------------------------------------------ | ---- | -------- | ---- | ---- | ---- | --------- | ---- |
+| DANN ViT (2015)<br />[[code](src/system/dann.py), [config](configs/dann.yaml)] | 90.0 | 91.0     | 79.0 | 98.9 | 78.8 | 99.9      | 89.6 |
+| CDAN ViT (2017)<br />[[code](src/system/cdan.py), [config](configs/dan.yaml)] | 94.7 | 96.3     | 80.0 | 98.9 | 80.4 | 100.0     | 91.7 |
+| CDAN+E ViT (2017)<br />[[code](src/system/cdan.py), [config](configs/cdan_e.yaml)] | 97.1 | 96.7     | 80.1 | 99.2 | 79.8 | 99.9      | 92.1 |
+| SHOT (CDAN+E) (2020)<br />[[code](src/system/exp.py), [config](configs/exp/shot_cdan.yaml)] | 93.2 | 95.7     | 77.7 | 98.9 | 76.0 | **100.0** | 90.2 |
+| MIXUP (CDAN+E) (2021)<br />[[code](src/system/exp.py), [config](configs/exp/pseudo_mixup_ratio_cdan.yaml)] | 92.9 | **96.1** | 76.2 | 98.9 | 77.7 | **100.0** | 90.3 |
 
 
 
 ### Future Updates
 
 - [x] Add weight parameter
-- [ ] Add ViT results
+- [x] Add ViT results
 - [ ] Check Fixbi code
 - [ ] Add office-home dataset results
 - [ ] Add digits results
