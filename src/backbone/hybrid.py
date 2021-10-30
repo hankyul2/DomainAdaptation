@@ -25,7 +25,7 @@ class Hybrid(nn.Module):
         self.vit.load_npz(npz)
 
 
-def get_hybrid(model_name, pretrained=False, pre_logits=True, dropout=0.1, **kwargs):
+def get_hybrid(model_name, pretrained=False, pre_logits=False, dropout=0.1, **kwargs):
     if 'vit_base' in model_name:
         num_layer, d_model, h, d_ff, N = [3, 4, 9], 768, 12, 3072, 12
     elif 'vit_large' in model_name:
