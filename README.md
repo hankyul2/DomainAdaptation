@@ -1,6 +1,6 @@
 # Domain Adaptation (Pytorch-Lightning)
 
-This repository contains pytorch (pytorch-lightning) version source code introduced by domain adaptation papers:
+This repository contains unofficial pytorch (pytorch-lightning) version source code introduced by domain adaptation papers:
 
 1. DANN (2015) [[paper](http://proceedings.mlr.press/v37/ganin15.html), [repo](https://github.com/fungtion/DANN)] 
 2. CDAN (2017) [[paper](https://arxiv.org/abs/1705.10667), [repo](https://github.com/thuml/CDAN)]
