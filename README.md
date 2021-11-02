@@ -109,7 +109,7 @@ Combination of several methods or models. (No weights and tf.dev)
 
 ### Some Notations
 
-1. We use `pytorch-lightning` in the code. So if you are unfamiliar with `pytorch-lightning`, I recommend you to read [quick-start of pytorch-lightning](). (quick start is enough to read this code)
+1. We use `pytorch-lightning` in the code. So if you are unfamiliar with `pytorch-lightning`, I recommend you to read [quick-start of pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/starter/new-project.html). (quick start is enough to read this code)
 2. To avoid duplication of code, we use class inheritance and just add changes proposed in papers. We try to keep code simple and nice to read. So if you think code is difficult to read, please leave it as issue or PR.
 3. Only 8 papers are now implemented. If there are any request for certain paper, we will try to re-implement it.
 4. There are some problems in backbone code. (I could not find where) So performance can be lower than reported table. I recommend to use standard library model. (timm, torchvision, etc)
